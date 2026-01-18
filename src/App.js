@@ -283,7 +283,7 @@ const KampuskoopWebsite = () => {
             </div>
             <div className="rounded-xl overflow-hidden shadow-lg">
               <img
-                src="/leather-crafting.jpg"
+                src={`${process.env.PUBLIC_URL}/leather-crafting.jpg`}
                 alt="Leather crafting"
                 className="w-full h-80 object-cover"
               />
