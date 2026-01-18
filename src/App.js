@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, Target, Users, Lightbulb, Heart, Bell, Menu, X, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import './App.css';
+import logo from './logo.png';
 
 const KampuskoopWebsite = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -189,9 +190,7 @@ const KampuskoopWebsite = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-yellow-600 to-green-700 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-lg">K</span>
-              </div>
+              <img src={logo} alt="Kampuskoop Logo" className="w-12 h-12 object-contain" />
               <span className="text-xl font-bold text-yellow-700">Kampuskoop</span>
             </div>
 
@@ -232,6 +231,9 @@ const KampuskoopWebsite = () => {
       <section id="about" className="bg-gradient-to-br from-yellow-50 to-green-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
+            <div className="flex justify-center mb-6">
+              <img src={logo} alt="BAİBÜ Kampüs Kooperatifi" className="w-48 h-48 object-contain" />
+            </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="text-yellow-700">Kampuskoop</span>{' '}
               <span className="text-green-700">Hakkında</span>
@@ -407,9 +409,7 @@ const KampuskoopWebsite = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-yellow-600 to-green-700 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">K</span>
-                </div>
+                <img src={logo} alt="Kampuskoop Logo" className="w-12 h-12 object-contain" />
                 <span className="text-xl font-bold">Kampuskoop</span>
               </div>
               <p className="text-gray-400 text-sm mb-4">
