@@ -281,7 +281,7 @@ const KampuskoopWebsite = () => {
             </div>
             <div className="rounded-xl overflow-hidden shadow-lg">
               <img
-                src="https://images.unsplash.com/photo-1590736969955-71cc94901144?w=800&h=600&fit=crop"
+                src="/leather-crafting.jpg"
                 alt="Leather crafting"
                 className="w-full h-80 object-cover"
               />
