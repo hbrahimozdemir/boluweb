@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, Target, Users, Lightbulb, Heart, Bell, Menu, X, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import './App.css';
-import logo from './logo.jpg';
+import logo from './logo.png';
 
 const KampuskoopWebsite = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
