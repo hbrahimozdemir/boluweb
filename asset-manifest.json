@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/boluweb/static/css/main.e754b575.css",
-    "main.js": "/boluweb/static/js/main.4ba10c6d.js",
+    "main.js": "/boluweb/static/js/main.c2e257bc.js",
     "static/js/453.957d3057.chunk.js": "/boluweb/static/js/453.957d3057.chunk.js",
-    "static/media/logo.png": "/boluweb/static/media/logo.8bf16ba9042554035bf5.png",
+    "static/media/logo.png": "/boluweb/static/media/logo.d94288aecb106a3e0636.png",
     "index.html": "/boluweb/index.html",
     "main.e754b575.css.map": "/boluweb/static/css/main.e754b575.css.map",
-    "main.4ba10c6d.js.map": "/boluweb/static/js/main.4ba10c6d.js.map",
+    "main.c2e257bc.js.map": "/boluweb/static/js/main.c2e257bc.js.map",
     "453.957d3057.chunk.js.map": "/boluweb/static/js/453.957d3057.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e754b575.css",
-    "static/js/main.4ba10c6d.js"
+    "static/js/main.c2e257bc.js"
   ]
 }
