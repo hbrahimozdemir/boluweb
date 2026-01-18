@@ -6,11 +6,52 @@ import logo from './logo.png';
 const KampuskoopWebsite = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const events = [
+  // Helper to parse Turkish date string with time to Date object
+  const parseDate = (dateStr, timeStr) => {
+    const months = {
+      'Ocak': 0, 'Şubat': 1, 'Mart': 2, 'Nisan': 3, 'Mayıs': 4, 'Haziran': 5,
+      'Temmuz': 6, 'Ağustos': 7, 'Eylül': 8, 'Ekim': 9, 'Kasım': 10, 'Aralık': 11
+    };
+
+    // Parse date: "19 Ocak 2026"
+    const parts = dateStr.split(' ');
+    if (parts.length !== 3) return new Date();
+
+    // Parse time: "13:30"
+    const timeParts = timeStr ? timeStr.split(':') : ['00', '00'];
+
+    const day = parseInt(parts[0]);
+    const month = months[parts[1]];
+    const year = parseInt(parts[2]);
+    const hours = parseInt(timeParts[0]);
+    const minutes = parseInt(timeParts[1]);
+
+    return new Date(year, month, day, hours, minutes);
+  };
+
+  // Helper to determine status based on date AND time
+  const getEventStatus = (dateStr, timeStr) => {
+    const eventDate = parseDate(dateStr, timeStr);
+    const now = new Date();
+
+    // If event is in the past (date + time)
+    if (eventDate < now) return 'past';
+
+    // If same day but future time
+    if (eventDate.getDate() === now.getDate() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getFullYear() === now.getFullYear()) {
+      return 'active'; // Today, upcoming time
+    }
+
+    return 'upcoming';
+  };
+
+  const rawEvents = [
     {
       id: 1,
       title: "Deri Ürün Tasarım ve Üretim Workshopu",
-      date: "25 Aralık 2025",
+      date: "25 Temmuz 2026",
       time: "13:30",
       location: "Atölye",
       description: "Deri atık parçalardan uygulamalı deri obje üretimi. Basit el aletleri, lazer makinaları, inovatif ürünler.",
@@ -20,7 +61,7 @@ const KampuskoopWebsite = () => {
     {
       id: 2,
       title: "E-ticaret ve Mikro İhracat",
-      date: "24 Aralık 2025",
+      date: "24 Aralık 2026",
       time: "14:00",
       location: "Trendyol Yöneticisi",
       description: "E-ticaret ve E-ihracata bakış. Trendyol uygulamaları.",
@@ -98,6 +139,28 @@ const KampuskoopWebsite = () => {
       color: "gray"
     }
   ];
+
+  // Process events with dynamic status based on Date AND Time
+  const processedEvents = rawEvents.map(event => {
+    const status = getEventStatus(event.date, event.time);
+    const dateObj = parseDate(event.date, event.time);
+    return { ...event, status, dateObj };
+  });
+
+  // Sort events: Upcoming/Active first (sorted by date), then Past events
+  const events = processedEvents.sort((a, b) => {
+    // Prioritize active/upcoming over past
+    const isAPast = a.status === 'past';
+    const isBPast = b.status === 'past';
+
+    if (isAPast && !isBPast) return 1;
+    if (!isAPast && isBPast) return -1;
+
+    // Within same category, sort by date (closest first)
+    return a.dateObj - b.dateObj;
+  });
+
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const announcements = [
     {
@@ -315,8 +378,8 @@ const KampuskoopWebsite = () => {
                     className="w-full h-full object-cover opacity-60"
                   />
                   <div className="absolute top-4 right-4">
-                    <span className={`${getStatusColor(event.status)} text-white text-xs px-3 py-1 rounded-full`}>
-                      {event.status === 'upcoming' ? 'Geçmiş Etkinlik' : event.status === 'active' ? 'Geçmiş Etkinlik' : 'Geçmiş Etkinlik'}
+                    <span className={`${getStatusColor(event.status)} text-white text-xs px-4 py-1.5 rounded-full font-semibold shadow-sm`}>
+                      {event.status === 'upcoming' ? 'Yaklaşan Etkinlik' : event.status === 'active' ? 'Bugün' : 'Geçmiş Etkinlik'}
                     </span>
                   </div>
                 </div>
@@ -341,8 +404,15 @@ const KampuskoopWebsite = () => {
 
                   <p className="text-gray-700 text-sm mb-4">{event.description}</p>
 
-                  <button className="w-full bg-gradient-to-r from-yellow-500 to-green-500 text-white py-2 rounded-lg hover:shadow-md transition flex items-center justify-center">
-                    Etkinlik Geçti
+                  <button
+                    onClick={() => setSelectedEvent(event)}
+                    className={`w-full py-2 rounded-lg transition flex items-center justify-center font-medium ${event.status === 'past'
+                      ? 'bg-gray-400 text-gray-100 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-yellow-500 to-green-500 text-white hover:shadow-md'
+                      }`}
+                    disabled={event.status === 'past'}
+                  >
+                    {event.status === 'past' ? 'Etkinlik Geçti' : 'Detaylar'}
                     <span className="ml-2">→</span>
                   </button>
                 </div>
@@ -480,7 +550,81 @@ const KampuskoopWebsite = () => {
           </div>
         </div>
       </footer>
-    </div>
+
+      {/* Event Detail Modal */}
+      {selectedEvent && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden animate-scale-in">
+            {/* Modal Header with Image */}
+            <div className="relative h-48 bg-gray-900">
+              <img
+                src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop"
+                alt={selectedEvent.title}
+                className="w-full h-full object-cover opacity-70"
+              />
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition"
+              >
+                <X size={24} />
+              </button>
+              <div className="absolute bottom-4 left-6">
+                <span className={`${getStatusColor(selectedEvent.status)} text-white text-xs px-3 py-1 rounded-full font-semibold shadow-sm`}>
+                  {selectedEvent.status === 'upcoming' ? 'Yaklaşan' : selectedEvent.status === 'active' ? 'Bugün' : 'Geçmiş'}
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedEvent.title}</h2>
+              <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6 border-b border-gray-100 pb-6">
+                <div className="flex items-center">
+                  <Calendar size={18} className="mr-2 text-green-600" />
+                  <span className="font-medium">{selectedEvent.date}</span>
+                </div>
+                <div className="flex items-center">
+                  <Clock size={18} className="mr-2 text-green-600" />
+                  <span className="font-medium">{selectedEvent.time}</span>
+                </div>
+                <div className="flex items-center">
+                  <MapPin size={18} className="mr-2 text-green-600" />
+                  <span className="font-medium">{selectedEvent.location}</span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">Etkinlik Hakkında</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {selectedEvent.description}
+                </p>
+
+                <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-4 mt-4">
+                  <h4 className="font-medium text-yellow-800 mb-1">Katılım Bilgisi</h4>
+                  <p className="text-sm text-yellow-700">
+                    Bu etkinlik halka açıktır ve katılım ücretsizdir. Lütfen etkinlik saatinden 15 dakika önce alanda hazır bulununuz.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8 flex justify-end space-x-3">
+                <button
+                  onClick={() => setSelectedEvent(null)}
+                  className="px-6 py-2.5 text-gray-600 hover:text-gray-900 font-medium transition"
+                >
+                  Kapat
+                </button>
+                {selectedEvent.status !== 'past' && (
+                  <button className="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium shadow-md transition transform hover:scale-105">
+                    Kayıt Ol
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div >
   );
 };
 
