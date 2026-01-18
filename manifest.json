@@ -1,19 +1,19 @@
 {
-  "short_name": "Kampus Koop",
-  "name": "Kampus Koop - Kampüs Kooperatif Platformu",
+  "short_name": "BAİBÜ Kampüs Koop",
+  "name": "BAİBÜ Kampüs Kooperatifi",
   "icons": [
     {
-      "src": "favicon.png",
+      "src": "logo.png",
       "sizes": "1024x1024",
       "type": "image/png"
     },
     {
-      "src": "favicon.png",
+      "src": "logo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "favicon.png",
+      "src": "logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }
