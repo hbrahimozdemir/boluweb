@@ -7,6 +7,15 @@ import leather from './leather.jpg';
 const KampuskoopWebsite = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Smooth scroll to footer social media section
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contact-social');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setMobileMenuOpen(false); // Close mobile menu if open
+    }
+  };
+
   // Helper to parse Turkish date string with time to Date object
   const parseDate = (dateStr, timeStr) => {
     const months = {
@@ -264,7 +273,10 @@ const KampuskoopWebsite = () => {
               <a href="#announcements" className="text-gray-700 hover:text-yellow-700 transition">Duyurular</a>
             </nav>
 
-            <button className="hidden md:block bg-gradient-to-r from-yellow-600 to-green-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition">
+            <button
+              onClick={scrollToContact}
+              className="hidden md:block bg-gradient-to-r from-yellow-600 to-green-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition"
+            >
               Bize Ulaşın
             </button>
 
@@ -283,7 +295,10 @@ const KampuskoopWebsite = () => {
               <a href="#about" className="block text-gray-700 hover:text-yellow-700">Hakkımızda</a>
               <a href="#events" className="block text-gray-700 hover:text-yellow-700">Etkinlikler</a>
               <a href="#announcements" className="block text-gray-700 hover:text-yellow-700">Duyurular</a>
-              <button className="w-full bg-gradient-to-r from-yellow-600 to-green-600 text-white px-6 py-2 rounded-lg">
+              <button
+                onClick={scrollToContact}
+                className="w-full bg-gradient-to-r from-yellow-600 to-green-600 text-white px-6 py-2 rounded-lg"
+              >
                 Bize Ulaşın
               </button>
             </div>
@@ -520,7 +535,7 @@ const KampuskoopWebsite = () => {
               </ul>
             </div>
 
-            <div>
+            <div id="contact-social">
               <h3 className="font-bold text-lg mb-4 text-yellow-400">Bizi Takip Edin</h3>
               <p className="text-gray-400 text-sm mb-4">
                 Güncellemeler ve sürdürülebilir inovasyon hikayeleri için bağlantıda kalın.
