@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, Target, Users, Lightbulb, Heart, Bell, Menu, X, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import './App.css';
 import logo from './logo.png';
+import leather from './leather.jpg';
 
 const KampuskoopWebsite = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -283,7 +284,7 @@ const KampuskoopWebsite = () => {
             </div>
             <div className="rounded-xl overflow-hidden shadow-lg">
               <img
-                src="https://images.unsplash.com/photo-1590736969955-71cc94901144?w=800&h=600&fit=crop"
+                src={leather}
                 alt="Leather crafting"
                 className="w-full h-80 object-cover"
               />
