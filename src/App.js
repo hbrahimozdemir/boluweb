@@ -310,9 +310,19 @@ const KampuskoopWebsite = () => {
       <section id="about" className="bg-gradient-to-br from-yellow-50 to-green-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="flex justify-center mb-6">
-              <img src={logo} alt="BAİBÜ Kampüs Kooperatifi" className="w-48 h-48 object-contain" />
+            {/* Logos Row - Main logo centered with partner logos on sides */}
+            <div className="flex items-center justify-center gap-8 md:gap-16 mb-6 flex-wrap">
+              <div className="flex items-center justify-center w-32 h-32 md:w-40 md:h-40">
+                <img src={`${process.env.PUBLIC_URL}/tubitak.png`} alt="TÜBİTAK Logo" className="max-w-full max-h-full object-contain" />
+              </div>
+              <div className="flex items-center justify-center">
+                <img src={logo} alt="BAİBÜ Kampüs Kooperatifi" className="w-40 h-40 md:w-48 md:h-48 object-contain" />
+              </div>
+              <div className="flex items-center justify-center w-32 h-32 md:w-40 md:h-40">
+                <img src={`${process.env.PUBLIC_URL}/baibu-logo.png`} alt="BAİBÜ Logo" className="max-w-full max-h-full object-contain" />
+              </div>
             </div>
+
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="text-yellow-700">Kampuskoop</span>{' '}
               <span className="text-green-700">Hakkında</span>
