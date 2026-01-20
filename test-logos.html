@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+
+        .logo-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        img {
+            max-width: 200px;
+            max-height: 200px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Logo Test - Görsel Kontrol</h1>
+
+    <div class="logo-container">
+        <h2>TÜBİTAK Logo</h2>
+        <p>Path: /tubitak.png</p>
+        <img src="/tubitak.png" alt="TÜBİTAK Logo">
+    </div>
+
+    <div class="logo-container">
+        <h2>BAİBÜ Logo</h2>
+        <p>Path: /baibu-logo.png</p>
+        <img src="/baibu-logo.png" alt="BAİBÜ Logo">
+    </div>
+
+    <div class="logo-container">
+        <h2>Kampuskoop Logo (Kontrol)</h2>
+        <p>Path: /logo.png</p>
+        <img src="/logo.png" alt="Kampuskoop Logo">
+    </div>
+
+    <script>
+        // Check if images loaded successfully
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('load', function () {
+                console.log('✅ Loaded successfully:', this.src);
+                this.style.border = '3px solid green';
+            });
+            img.addEventListener('error', function () {
+                console.error('❌ Failed to load:', this.src);
+                this.style.border = '3px solid red';
+                this.insertAdjacentHTML('afterend', '<p style="color: red;">HATA: Resim yüklenemedi!</p>');
+            });
+        });
+    </script>
+</body>
+
+</html>
