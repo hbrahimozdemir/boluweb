@@ -4,7 +4,7 @@ import './App.css';
 import logo from './logo.png';
 import leather from './leather.jpg';
 
-const KampuskoopWebsite = () => {
+const BaibuKampusKooperatifiWebsite = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Smooth scroll to footer social media section
@@ -263,8 +263,8 @@ const KampuskoopWebsite = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
-              <img src={logo} alt="Kampuskoop Logo" className="w-12 h-12 object-contain" />
-              <span className="text-xl font-bold text-yellow-700">Kampuskoop</span>
+              <img src={logo} alt="BAİBÜ Kampüs Kooperatifi Logo" className="w-12 h-12 object-contain" />
+              <span className="text-xl font-bold text-yellow-700">BAİBÜ Kampüs Kooperatifi</span>
             </div>
 
             <nav className="hidden md:flex space-x-8">
@@ -324,12 +324,12 @@ const KampuskoopWebsite = () => {
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="text-yellow-700">Kampuskoop</span>{' '}
+              <span className="text-yellow-700">BAİBÜ Kampüs Kooperatifi</span>{' '}
               <span className="text-green-700">Hakkında</span>
             </h1>
             <p className="text-lg text-gray-700 max-w-4xl mx-auto leading-relaxed">
               Sıfır atık prensipleri ve döngüsel ekonomi metodolojileri aracılığıyla sürdürülebilir deri
-              inovasyonuna öncülük eden, TÜBİTAK destekli bir projedir. Kampuskoop TÜBİTAK-3005 Başarılı
+              inovasyonuna öncülük eden, TÜBİTAK destekli bir projedir. BAİBÜ Kampüs Kooperatifi TÜBİTAK-3005 Başarılı
               Genç Girişimciliğin Arttırılması için Öğrenci Kooperatifleri Modeli Projesinin bir çıktısı olarak hayata
               geçmiştir.
             </p>
@@ -458,7 +458,7 @@ const KampuskoopWebsite = () => {
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-yellow-700 mb-4">Duyurular</h2>
             <p className="text-gray-700">
-              Kampuskoop'tan en son haberler, başarılar ve fırsatlardan haberdar olun.
+              BAİBÜ Kampüs Kooperatifi'nden en son haberler, başarılar ve fırsatlardan haberdar olun.
             </p>
           </div>
 
@@ -505,8 +505,8 @@ const KampuskoopWebsite = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <img src={logo} alt="Kampuskoop Logo" className="w-12 h-12 object-contain" />
-                <span className="text-xl font-bold">Kampuskoop</span>
+                <img src={logo} alt="BAİBÜ Kampüs Kooperatifi Logo" className="w-12 h-12 object-contain" />
+                <span className="text-xl font-bold">BAİBÜ Kampüs Kooperatifi</span>
               </div>
               <p className="text-gray-400 text-sm mb-4">
                 Deri atıklarını sıfır atık prensipleri ve döngüsel ekonomi yoluyla sürdürülebilir inovasyona dönüştürüyoruz.
@@ -536,11 +536,11 @@ const KampuskoopWebsite = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">📞</span>
-                  <span>+90 (312) 555-0123</span>
+                  <span>374 311 3228</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">📍</span>
-                  <span>Üniversite Kampusu, İnovasyon Merkezi</span>
+                  <span>Bolu Abant İzzet Baysal Üniversitesi Gerede MYO</span>
                 </li>
               </ul>
             </div>
@@ -568,7 +568,7 @@ const KampuskoopWebsite = () => {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
-            <p>© 2025 Kampuskoop. Tüm hakları saklıdır. Sürdürülebilir bir öğrenci girişimi.</p>
+            <p>© 2025 BAİBÜ Kampüs Kooperatifi. Tüm hakları saklıdır. Sürdürülebilir bir öğrenci girişimi.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="hover:text-white transition">Gizlilik Politikası</a>
               <a href="#" className="hover:text-white transition">Hizmet Şartları</a>
@@ -654,4 +654,4 @@ const KampuskoopWebsite = () => {
   );
 };
 
-export default KampuskoopWebsite;
+export default BaibuKampusKooperatifiWebsite;
