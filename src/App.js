@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Target, Users, Lightbulb, Heart, Bell, Menu, X, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
+import { Calendar, Clock, MapPin, Target, Users, Lightbulb, Heart, Bell, Menu, X, Facebook, Instagram, Twitter, Linkedin, ChevronLeft, ChevronRight } from 'lucide-react';
 import './App.css';
 import logo from './logo.png';
 import leather from './leather.jpg';
@@ -61,22 +61,33 @@ const BaibuKampusKooperatifiWebsite = () => {
     {
       id: 1,
       title: "Deri Ürün Tasarım ve Üretim Workshopu",
-      date: "25 Temmuz 2026",
+      date: "25 Aralık 2025",
       time: "13:30",
       location: "Atölye",
       description: "Deri atık parçalardan uygulamalı deri obje üretimi. Basit el aletleri, lazer makinaları, inovatif ürünler.",
       status: "upcoming",
-      color: "orange"
+      color: "orange",
+      images: [
+        "25.12 workshop.jpeg",
+        "25.12 workshop (2).jpeg",
+        "25.12 workshop (3).jpeg",
+        "25.12 workshop (4).jpeg",
+        "25.12 workshop (5).jpeg"
+      ]
     },
     {
       id: 2,
       title: "E-ticaret ve Mikro İhracat",
-      date: "24 Aralık 2026",
+      date: "24 Aralık 2025",
       time: "14:00",
       location: "Trendyol Yöneticisi",
       description: "E-ticaret ve E-ihracata bakış. Trendyol uygulamaları.",
       status: "active",
-      color: "green"
+      color: "green",
+      images: [
+        "24.12.2025.jpeg",
+        "24.12.2025 (2).jpeg"
+      ]
     },
     {
       id: 3,
@@ -86,7 +97,11 @@ const BaibuKampusKooperatifiWebsite = () => {
       location: "Konferans Salonu",
       description: "Go-to market strategy. Müşteri odaklı pazara giriş stratejisi. Müşteri nasıl bulunur?",
       status: "past",
-      color: "gray"
+      color: "gray",
+      images: [
+        "23.12.25. Go-to-market-strategy.jpeg",
+        "23.12.25. Go-to-market-strategy (2).jpeg"
+      ]
     },
     {
       id: 4,
@@ -96,7 +111,8 @@ const BaibuKampusKooperatifiWebsite = () => {
       location: "Onur Özevin",
       description: "Yeni bir girişim kurma süreçleri. İşletmecilik 101. Kampüskoop hakkında bilgilendirme.",
       status: "upcoming",
-      color: "orange"
+      color: "orange",
+      images: []
     },
     {
       id: 5,
@@ -106,7 +122,11 @@ const BaibuKampusKooperatifiWebsite = () => {
       location: "Soydan Cengiz",
       description: "İş Modeli Kanvası nedir, nasıl yapılır? Kendi iş modeli kanvasını Yarat.",
       status: "active",
-      color: "green"
+      color: "green",
+      images: [
+        "17.12.2025 BMC.jpeg",
+        "17.12.2025 BMC (2).jpeg"
+      ]
     },
     {
       id: 6,
@@ -116,7 +136,13 @@ const BaibuKampusKooperatifiWebsite = () => {
       location: "Mehmet Fazlı Türker",
       description: "Deri ürünleri girişimimiz. E-ticaret nasıl yapılır?",
       status: "past",
-      color: "gray"
+      color: "gray",
+      images: [
+        "11.12.25 E-ticaret stratejileri.jpeg",
+        "11.12.25 E-ticaret stratejileri (2).jpeg",
+        "11.12.25 E-ticaret stratejileri (3).jpeg",
+        "11.12.25 E-ticaret stratejileri (4).jpeg"
+      ]
     },
     {
       id: 7,
@@ -126,7 +152,13 @@ const BaibuKampusKooperatifiWebsite = () => {
       location: "Doç. Dr. Gamze Doğdu",
       description: "Sürdürülebilirlik kavramına genel bakış, Sıfır Atık, Döngüsel Ekonomi. Karbon Ayak izimi nasıl azaltırım?",
       status: "upcoming",
-      color: "orange"
+      color: "orange",
+      images: [
+        "10.12.25 Sürdürülebilirlik İlkeleri.jpeg",
+        "10.12.25 Sürdürülebilirlik İlkeleri (2).jpeg",
+        "10.12.25 Sürdürülebilirlik İlkeleri (3).jpeg",
+        "10.12.25 Sürdürülebilirlik İlkeleri (4).jpeg"
+      ]
     },
     {
       id: 8,
@@ -136,7 +168,14 @@ const BaibuKampusKooperatifiWebsite = () => {
       location: "Bolu SMMM Eğitmenleri",
       description: "Bilgisayarlı muhasebe uygulamaları, LUCA programı eğitimi, kendi işinin muhasebesini nasıl tutarsın?",
       status: "active",
-      color: "green"
+      color: "green",
+      images: [
+        "04.12.25 Muhasebe Uygulamaları.jpeg",
+        "04.12.25 Muhasebe Uygulamaları (2).jpeg",
+        "04.12.25 Muhasebe Uygulamaları (3).jpeg",
+        "04.12.25 Muhasebe Uygulamaları (4).jpeg",
+        "04.12.25 Muhasebe Uygulamaları (5).jpeg"
+      ]
     },
     {
       id: 9,
@@ -146,7 +185,11 @@ const BaibuKampusKooperatifiWebsite = () => {
       location: "İlkay Bağatır (Bolu SMMM Başkanı)",
       description: "Muhasebe mesleğinin dünü, bugünü ve geleceği, mesleki kariyer fırsatları, yeni iş kurma prosedürleri konusunda söyleşi.",
       status: "past",
-      color: "gray"
+      color: "gray",
+      images: [
+        "03.12.25 Muhasebe Mesleği veKariyer.jpeg",
+        "03.12.25 Muhasebe Mesleği veKariyer (2).jpeg"
+      ]
     }
   ];
 
@@ -171,38 +214,49 @@ const BaibuKampusKooperatifiWebsite = () => {
   });
 
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState({});
 
   const announcements = [
     {
       id: 1,
-      title: "TÜBİTAK Hibesi Onaylandı",
-      date: "20 Aralık 2025",
-      description: "Projemizin TÜBİTAK fonu için onaylandığını duyurmaktan mutluluk duyuyoruz, bu da sürdürülebilir deri inovasyon girişimlerimizi genişletmemizi sağlayacak.",
-      icon: Lightbulb,
+      title: "BAİBÜ Kampüs İşletme ve Tüketim Kooperatifi Kuruldu!",
+      date: "14 Nisan 2025",
+      description: "TÜBİTAK destekli projemiz kapsamında BAİBÜ Kampüs İşletme ve Tüketim Kooperatifinin resmi kuruluş başvurusunu gerçekleştirdik. Proje ekibimiz ve öğrencilerimizden oluşan ilk kurucu ortaklar, proje partnerimiz olan Gerede Ticaret Sanayi Odasında kuruluş imzalarını attılar. Üniversitemiz, şehrimiz ve ülkemize hayırlı olmasını diliyoruz.",
+      icon: Users,
       color: "mint"
     },
     {
       id: 2,
-      title: "Yeni Üye Başvuruları Açıldı",
-      date: "15 Aralık 2025",
-      description: "Kampuskoop, kooperatifimize katılmak isteyen öğrencilerden başvuru kabul etmeye başladı. Sürdürülebilir inovasyon ekibimizin bir parçası olmak için 31 Ocak'a kadar başvurun.",
-      icon: Users,
-      color: "yellow"
+      title: "Fiber Lazer Makinesi ve İş Bilgisayarı Teslim Alındı",
+      date: "26 Mart 2025",
+      description: "Projemiz kapsamında, deri parçalarını katma değerli ürünlere dönüştürmekte kullanacağımız Fiber Lazer Makinasını ve iş bilgisayarını teslim aldık. Üretim kapasitemizi artıracak bu teknoloji ile sıfır atık hedeflerimize daha hızlı ulaşacağız.",
+      icon: Lightbulb,
+      color: "gray"
     },
     {
       id: 3,
-      title: "İnovasyon Yarışması Kazananları",
-      date: "10 Aralık 2025",
-      description: "Üniversite Sürdürülebilirlik İnovasyon Yarışması'nda sıfır atık deri cüzdan tasarımıyla birincilik kazanan üyelerimizi tebrik ederiz!",
+      title: "Girişimcilik Tutum ve Algı Anketi",
+      date: "01 Mart 2025",
+      description: "Öğrencilerin girişimcilik tutum ve algısına yönelik anketimize katılarak projemize destek olabilirsiniz. Görüşleriniz modelimizin geliştirilmesi için çok değerli.",
       icon: Target,
-      color: "mint"
+      color: "yellow",
+      link: "https://forms.gle/MdbwTHc2AMPZeYbu5"
     },
     {
       id: 4,
-      title: "Kış Çalıştay Serisi",
-      date: "5 Aralık 2025",
-      description: "İleri deri işçiliği, döngüsel ekonomi prensipleri ve sürdürülebilir iş uygulamalarını kapsayan kapsamlı kış çalıştay serimize katılın.",
+      title: "Eğitim Serisi Başlıyor Kayıt Olun!",
+      date: "01 Ekim 2025",
+      description: "Temel İşletmecilik, Girişimcilik, Muhasebe Uygulamaları, e-Ticaret, Pazarlama, Kooperatifçilik ve Sürdürülebilirlik konularında uzman akademisyen ve iş insanlarının katılımıyla gerçekleştirilecek eğitim serisine katılmak için formu doldurmanız yeterli.",
       icon: Calendar,
+      color: "mint",
+      link: "https://forms.gle/iEwGDJ436orTXsxNA"
+    },
+    {
+      id: 5,
+      title: "TÜBİTAK 3005 Proje Desteği Kazanıldı",
+      date: "09 Ekim 2024",
+      description: "'Sosyal ve Beşeri Bilimlerde Yenilikçi Çözümler Araştırma Projeleri Destek Programı' kapsamında sunmuş olduğumuz 'Başarılı Genç Girişimciliğinin Arttırılması için Öğrenci Kooperatifleri Modeli' başlıklı projemiz TÜBİTAK tarafından desteklenmeye hak kazandı.",
+      icon: Lightbulb,
       color: "gray"
     }
   ];
@@ -397,12 +451,57 @@ const BaibuKampusKooperatifiWebsite = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (
               <div key={event.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
-                <div className="relative h-48 bg-gradient-to-br from-gray-900 to-gray-700">
-                  <img
-                    src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop"
-                    alt={event.title}
-                    className="w-full h-full object-cover opacity-60"
-                  />
+                <div className="relative h-48 bg-gradient-to-br from-gray-900 to-gray-700 group">
+                  {event.images && event.images.length > 0 ? (
+                    <>
+                      <img
+                        src={`${process.env.PUBLIC_URL}/events/${event.images[currentImageIndex[event.id] || 0]}`}
+                        alt={event.title}
+                        className="w-full h-full object-cover opacity-90"
+                      />
+                      {event.images.length > 1 && (
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const currentIndex = currentImageIndex[event.id] || 0;
+                              const newIndex = currentIndex === 0 ? event.images.length - 1 : currentIndex - 1;
+                              setCurrentImageIndex({ ...currentImageIndex, [event.id]: newIndex });
+                            }}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
+                          >
+                            <ChevronLeft size={20} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const currentIndex = currentImageIndex[event.id] || 0;
+                              const newIndex = (currentIndex + 1) % event.images.length;
+                              setCurrentImageIndex({ ...currentImageIndex, [event.id]: newIndex });
+                            }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
+                          >
+                            <ChevronRight size={20} />
+                          </button>
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                            {event.images.map((_, index) => (
+                              <div
+                                key={index}
+                                className={`w-2 h-2 rounded-full ${index === (currentImageIndex[event.id] || 0) ? 'bg-white' : 'bg-white/50'
+                                  }`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <img
+                      src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop"
+                      alt={event.title}
+                      className="w-full h-full object-cover opacity-60"
+                    />
+                  )}
                   <div className="absolute top-4 right-4">
                     <span className={`${getStatusColor(event.status)} text-white text-xs px-4 py-1.5 rounded-full font-semibold shadow-sm`}>
                       {event.status === 'upcoming' ? 'Yaklaşan Etkinlik' : event.status === 'active' ? 'Bugün' : 'Geçmiş Etkinlik'}
@@ -481,7 +580,17 @@ const BaibuKampusKooperatifiWebsite = () => {
                         <h3 className="text-xl font-bold text-gray-800">{announcement.title}</h3>
                         <span className="text-sm text-gray-600">{announcement.date}</span>
                       </div>
-                      <p className="text-gray-700 leading-relaxed">{announcement.description}</p>
+                      <p className="text-gray-700 leading-relaxed mb-3">{announcement.description}</p>
+                      {announcement.link && (
+                        <a
+                          href={announcement.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-sm font-semibold text-yellow-700 hover:text-yellow-800 transition"
+                        >
+                          Kayıt Ol / Formu Görüntüle →
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
