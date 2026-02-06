@@ -59,6 +59,20 @@ const BaibuKampusKooperatifiWebsite = () => {
 
   const rawEvents = [
     {
+      id: 10,
+      title: "Eğitim Sertifikaları Katılımcılara Teslim Edildi",
+      date: "14 Ocak 2026",
+      time: "14:00",
+      location: "KARMER / Gerede MYO",
+      description: "Projemiz kapsamında verilen eğitim ve seminer serisine katılan öğrencilere KARMER tarafından düzenlenen katılım sertifikaları verildi.",
+      status: "past",
+      color: "green",
+      images: [
+        "karmer-1.jpeg",
+        "karmer-2.jpeg"
+      ]
+    },
+    {
       id: 1,
       title: "Deri Ürün Tasarım ve Üretim Workshopu",
       date: "25 Aralık 2025",
@@ -209,14 +223,32 @@ const BaibuKampusKooperatifiWebsite = () => {
     if (isAPast && !isBPast) return 1;
     if (!isAPast && isBPast) return -1;
 
-    // Within same category, sort by date (closest first)
+    // Within same category, sort by date
+    // Upcoming/Active: Ascending (soonest first)
+    // Past: Descending (newest first)
+    if (isAPast) {
+      return b.dateObj - a.dateObj;
+    }
     return a.dateObj - b.dateObj;
   });
 
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState({});
 
   const announcements = [
+    {
+      id: 6,
+      title: "BAİBÜ Kampüs İşletme ve Tüketim Kooperatifi Kuruluş Başvurusu Yapıldı",
+      date: "15 Ocak 2026",
+      description: "Projemiz kapsamında BAİBÜ Kampüs İşletme ve Tüketim Kooperatifi'nin kuruluş başvurusu, kurucu ortaklar ve proje ekibinin katılımıyla Gerede Ticaret ve Sanayi Odası'nda yapıldı.",
+      icon: Users,
+      color: "mint",
+      images: [
+        "coop-establishment-1.jpeg",
+        "coop-establishment-2.jpeg"
+      ]
+    },
     {
       id: 1,
       title: "BAİBÜ Kampüs İşletme ve Tüketim Kooperatifi Kuruldu!",
@@ -567,7 +599,8 @@ const BaibuKampusKooperatifiWebsite = () => {
               return (
                 <div
                   key={announcement.id}
-                  className={`${getAnnouncementBg(announcement.color)} rounded-xl p-6 border-2 shadow-sm hover:shadow-md transition`}
+                  onClick={() => setSelectedAnnouncement(announcement)}
+                  className={`${getAnnouncementBg(announcement.color)} rounded-xl p-6 border-2 shadow-sm hover:shadow-md transition cursor-pointer transform hover:-translate-y-1`}
                 >
                   <div className="flex items-start">
                     <div className="flex-shrink-0 mr-4">
@@ -581,16 +614,26 @@ const BaibuKampusKooperatifiWebsite = () => {
                         <span className="text-sm text-gray-600">{announcement.date}</span>
                       </div>
                       <p className="text-gray-700 leading-relaxed mb-3">{announcement.description}</p>
-                      {announcement.link && (
-                        <a
-                          href={announcement.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center text-sm font-semibold text-yellow-700 hover:text-yellow-800 transition"
-                        >
-                          Kayıt Ol / Formu Görüntüle →
-                        </a>
+
+                      {/* Announcement Images Preview */}
+                      {announcement.images && announcement.images.length > 0 && (
+                        <div className="grid grid-cols-2 gap-4 mb-4 pointer-events-none">
+                          {announcement.images.map((image, index) => (
+                            <div key={index} className="relative h-48 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
+                              <img
+                                src={`${process.env.PUBLIC_URL}/events/${image}`}
+                                alt={`${announcement.title} - ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
                       )}
+
+                      <div className="flex items-center text-sm font-medium text-yellow-700 mt-2">
+                        <span>Detayları Görüntüle</span>
+                        <span className="ml-1">→</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -754,6 +797,76 @@ const BaibuKampusKooperatifiWebsite = () => {
                     Kayıt Ol
                   </button>
                 )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Announcement Detail Modal */}
+      {selectedAnnouncement && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+            <div className={`p-6 ${getAnnouncementBg(selectedAnnouncement.color)} border-b flex justify-between items-start sticky top-0 bg-opacity-95 backdrop-blur-sm z-10 rounded-t-2xl`}>
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-full bg-white/60 shadow-sm`}>
+                  {React.createElement(selectedAnnouncement.icon, { size: 24, className: selectedAnnouncement.color === 'mint' ? 'text-teal-700' : selectedAnnouncement.color === 'yellow' ? 'text-yellow-700' : 'text-gray-700' })}
+                </div>
+                <div>
+                  <h2 className={`text-xl font-bold ${selectedAnnouncement.color === 'mint' ? 'text-teal-900' : selectedAnnouncement.color === 'yellow' ? 'text-yellow-900' : 'text-gray-900'}`}>{selectedAnnouncement.title}</h2>
+                  <p className={`text-sm ${selectedAnnouncement.color === 'mint' ? 'text-teal-700' : selectedAnnouncement.color === 'yellow' ? 'text-yellow-700' : 'text-gray-600'}`}>{selectedAnnouncement.date}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedAnnouncement(null)}
+                className={`p-2 rounded-full transition ${selectedAnnouncement.color === 'mint' ? 'hover:bg-teal-200 text-teal-700' : selectedAnnouncement.color === 'yellow' ? 'hover:bg-yellow-200 text-yellow-700' : 'hover:bg-gray-200 text-gray-700'}`}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-8">
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed mb-6 whitespace-pre-line">
+                  {selectedAnnouncement.description}
+                </p>
+
+                {selectedAnnouncement.images && selectedAnnouncement.images.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    {selectedAnnouncement.images.map((image, index) => (
+                      <div key={index} className="rounded-xl overflow-hidden shadow-md">
+                        <img
+                          src={`${process.env.PUBLIC_URL}/events/${image}`}
+                          alt={`${selectedAnnouncement.title} - ${index + 1}`}
+                          className="w-full h-auto object-cover hover:scale-105 transition duration-500"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {selectedAnnouncement.link && (
+                  <div className="flex justify-center mt-8">
+                    <a
+                      href={selectedAnnouncement.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-600 to-green-600 text-white font-semibold rounded-xl hover:shadow-lg transition transform hover:-translate-y-0.5"
+                    >
+                      <Target size={20} className="mr-2" />
+                      Başvuru Formunu Görüntüle
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-8 pt-6 border-t flex justify-end">
+                <button
+                  onClick={() => setSelectedAnnouncement(null)}
+                  className="px-6 py-2 text-gray-600 hover:text-gray-900 font-medium transition"
+                >
+                  Kapat
+                </button>
               </div>
             </div>
           </div>
