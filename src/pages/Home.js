@@ -38,9 +38,21 @@ const Home = () => {
                 >
                     <span id="blackOverlay" className="w-full h-full absolute opacity-60 bg-black"></span>
                 </div>
-                <div className="container relative mx-auto px-4">
+                <div className="container relative mx-auto px-4 z-10">
                     <div className="items-center flex flex-wrap">
                         <div className="w-full lg:w-8/12 px-4 ml-auto mr-auto text-center">
+                            {/* Logos Row - Main logo centered with partner logos on sides */}
+                            <div className="flex items-center justify-center gap-4 md:gap-8 mb-8 flex-wrap">
+                                <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white/80 rounded-full p-2 backdrop-blur-sm shadow-lg transform hover:scale-105 transition-transform duration-300">
+                                    <img src="/tubitak.png" alt="TÜBİTAK Logo" className="max-w-full max-h-full object-contain" />
+                                </div>
+                                <div className="flex items-center justify-center w-32 h-32 md:w-40 md:h-40 bg-white/90 rounded-full p-2 backdrop-blur-sm shadow-xl z-10 transform hover:scale-110 transition-transform duration-300">
+                                    <img src="/logo.png" alt="BAİBÜ Kampüs Kooperatifi" className="max-w-full max-h-full object-contain" />
+                                </div>
+                                <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white/80 rounded-full p-2 backdrop-blur-sm shadow-lg transform hover:scale-105 transition-transform duration-300">
+                                    <img src="/baibu-logo.png" alt="BAİBÜ Logo" className="max-w-full max-h-full object-contain" />
+                                </div>
+                            </div>
                             <h1 className="text-white font-bold text-5xl mb-6 drop-shadow-lg">
                                 {hero.title}
                             </h1>
