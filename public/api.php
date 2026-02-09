@@ -1,7 +1,10 @@
 <?php
-// Hata raporlamayi acalim
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+// Output buffering baslat - istenmeyen ciktilari yakalamak icin
+ob_start();
+
+// Hata raporlamayi kapatalim (JSON bozulmasini onlemek icin)
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
 error_reporting(E_ALL);
 
 header("Access-Control-Allow-Origin: *");
@@ -9,13 +12,21 @@ header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    // Tamponu temizle ve cik
+    ob_end_clean();
     exit(0);
 }
 
-function sendError($message, $code = 500) {
+function sendJson($data, $code = 200) {
+    // Tamponu temizle - sadece JSON ciktisi gitmeli
+    ob_end_clean();
     http_response_code($code);
-    echo json_encode(['success' => false, 'message' => $message]);
+    echo json_encode($data);
     exit;
+}
+
+function sendError($message, $code = 500) {
+    sendJson(['success' => false, 'message' => $message], $code);
 }
 
 try {
@@ -34,14 +45,13 @@ try {
         $version = $_GET['version'] ?? '';
         if ($version && file_exists("backups/$version")) {
             if (copy("backups/$version", 'content.json')) {
-                echo json_encode(['success' => true, 'message' => 'Sistem geri yuklendi: ' . $version]);
+                sendJson(['success' => true, 'message' => 'Sistem geri yuklendi: ' . $version]);
             } else {
-                echo json_encode(['success' => false, 'message' => 'Geri yukleme basarisiz']);
+                sendError('Geri yukleme basarisiz');
             }
         } else {
-            echo json_encode(['success' => false, 'message' => 'Yedek bulunamadi']);
+            sendError('Yedek bulunamadi');
         }
-        exit;
     }
 
     // Yedekleri listeleme
@@ -61,8 +71,7 @@ try {
             });
         }
         
-        echo json_encode(['success' => true, 'backups' => $list]);
-        exit;
+        sendJson(['success' => true, 'backups' => $list]);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -190,15 +199,15 @@ try {
 
             // JSON dosyasini guncelle
             if(file_put_contents('content.json', json_encode($newData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-                $response['success'] = true;
-                $response['message'] = 'Guncelleme basarili!';
-                $response['data'] = $newData;
+                sendJson([
+                    'success' => true, 
+                    'message' => 'Guncelleme basarili!', 
+                    'data' => $newData
+                ]);
             } else {
                 throw new Exception('content.json dosyasina yazilamadi. Yazma izni var mi?');
             }
         }
-        
-        echo json_encode($response);
     }
 } catch (Throwable $e) {
     sendError('Sunucu hatasi (catch): ' . $e->getMessage());

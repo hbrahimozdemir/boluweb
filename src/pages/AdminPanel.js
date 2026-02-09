@@ -37,11 +37,20 @@ const AdminPanel = (props) => {
 
     const fetchBackups = () => {
         fetch('/api.php?action=list_backups')
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
             .then(data => {
                 if (data.success) {
                     setBackups(data.backups);
+                } else {
+                    console.error("Backup list error:", data.message);
                 }
+            })
+            .catch(err => {
+                console.error("Backup fetch error:", err);
+                // Kullaniciya hata gostermek isterseniz state'e ekleyebilirsiniz
             });
     };
 
@@ -102,7 +111,8 @@ const AdminPanel = (props) => {
         if (!window.confirm('Bu versiyona geri dönmek istediğinize emin misiniz? Mevcut değişiklikler kaybolabilir (ama yedeği alınır).')) return;
 
         try {
-            const response = await fetch(`/api.php?action=restore&version=${version}`);
+            const encodedVersion = encodeURIComponent(version);
+            const response = await fetch(`/api.php?action=restore&version=${encodedVersion}`);
             const result = await response.json();
             if (result.success) {
                 setMessage('Sistem geri yüklendi!');
@@ -415,14 +425,7 @@ const AdminPanel = (props) => {
                                                     name={`event_images_${index}[]`} // Form submit icin gerekli olmayabilir ama referans
                                                     onChange={(e) => {
                                                         const files = Array.from(e.target.files);
-                                                        // State'e dosyaları kaydetmiyoruz, form submit edilirken alacagiz
-                                                        // Ancak onizleme icin bir yontem dusunulebilir. 
-                                                        // Simdilik sadece dosya secildigini belirtelim.
-
-                                                        // React state'inde file objelerini tutmak icin ayri bir state yapisi kurmadik.
-                                                        // Bu yuzden dogrudan form submit aninda file'lari alacagiz.
-                                                        // Ancak kullaniciya feedback vermek icin:
-                                                        e.target.setAttribute('data-files-selected', files.length);
+                                                        // e.target.setAttribute('data-files-selected', files.length);
                                                     }}
                                                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                                 />
@@ -518,7 +521,7 @@ const AdminPanel = (props) => {
                                                     name={`announcement_images_${index}[]`}
                                                     onChange={(e) => {
                                                         const files = Array.from(e.target.files);
-                                                        e.target.setAttribute('data-files-selected', files.length);
+                                                        // e.target.setAttribute('data-files-selected', files.length);
                                                     }}
                                                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                                 />
