@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, X, Check } from 'lucide-react';
 
@@ -21,6 +21,11 @@ const AdminPanel = (props) => {
 
     const [deleteConfirm, setDeleteConfirm] = useState(null); // { section, itemIndex, imgIndex }
 
+    // Auto-scroll refs
+    const eventsEndRef = useRef(null);
+    const announcementsEndRef = useRef(null);
+    const [autoScrollSection, setAutoScrollSection] = useState(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -40,8 +45,8 @@ const AdminPanel = (props) => {
 
     const fetchBackups = () => {
         setDebugText('Loading...');
-        // Proxy uzerinden degil dogrudan PHP sunucusuna gidelim
-        fetch('http://localhost:8000/api.php?action=list_backups&t=' + Date.now())
+        // Proxy veya localhost yerine relative path kullan
+        fetch('/api.php?action=list_backups&t=' + Date.now())
             .then(res => {
                 if (!res.ok) throw new Error('Network response was not ok');
                 return res.text().then(text => {
@@ -80,7 +85,16 @@ const AdminPanel = (props) => {
         }
     }, [activeTab]);
 
-
+    // Handle auto-scroll logic
+    useEffect(() => {
+        if (autoScrollSection === 'events' && eventsEndRef.current) {
+            eventsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            setAutoScrollSection(null);
+        } else if (autoScrollSection === 'announcements' && announcementsEndRef.current) {
+            announcementsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            setAutoScrollSection(null);
+        }
+    }, [content, autoScrollSection]);
 
     const handleUpdate = async (e) => {
         e.preventDefault();
@@ -116,12 +130,6 @@ const AdminPanel = (props) => {
             if (result.success) {
                 setMessage('Başarıyla güncellendi!');
                 setContent(result.data);
-
-                // Clear file inputs to prevent duplicate uploads on next save
-                document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
-                // Reset file count spans
-                document.querySelectorAll('[id^="file-count-"]').forEach(span => span.textContent = 'Dosya seçilmedi');
-
                 setHeroFile(null);
                 setAboutFile(null);
                 // Eğer History sekmesi açıksa listeyi güncelle (veya arka planda)
@@ -159,8 +167,8 @@ const AdminPanel = (props) => {
         if (!window.confirm('Bu yedeği kalıcı olarak silmek istediğinize emin misiniz?')) return;
 
         try {
-            // Proxy bypass (localhost:8000)
-            const response = await fetch(`http://localhost:8000/api.php?action=delete_backup&file=${encodeURIComponent(filename)}`);
+            // Proxy veya localhost yerine relative path kullan
+            const response = await fetch(`/api.php?action=delete_backup&file=${encodeURIComponent(filename)}`);
             const result = await response.json();
 
             if (result.success) {
@@ -194,40 +202,7 @@ const AdminPanel = (props) => {
     // Array update helper (events, announcements)
     const handleArrayChange = (section, index, field, value) => {
         const newArray = [...content[section]];
-        let updatedItem = { ...newArray[index], [field]: value };
-
-        // Auto Status Logic for Events when Date changes
-        if (section === 'events' && field === 'date') {
-            const months = {
-                'Ocak': 0, 'Şubat': 1, 'Mart': 2, 'Nisan': 3, 'Mayıs': 4, 'Haziran': 5,
-                'Temmuz': 6, 'Ağustos': 7, 'Eylül': 8, 'Ekim': 9, 'Kasım': 10, 'Aralık': 11
-            };
-
-            try {
-                const parts = value.split(' ');
-                if (parts.length >= 3) {
-                    const day = parseInt(parts[0]);
-                    const month = months[parts[1]] !== undefined ? months[parts[1]] : 0;
-                    const year = parseInt(parts[2]);
-
-                    const eventDate = new Date(year, month, day);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0); // Reset time part for accurate comparison
-
-                    if (eventDate < today) {
-                        updatedItem.status = 'past';
-                    } else if (eventDate.getTime() === today.getTime()) {
-                        updatedItem.status = 'active';
-                    } else {
-                        updatedItem.status = 'upcoming';
-                    }
-                }
-            } catch (e) {
-                // Ignore parse errors
-            }
-        }
-
-        newArray[index] = updatedItem;
+        newArray[index] = { ...newArray[index], [field]: value };
         setContent(prev => ({
             ...prev,
             [section]: newArray
@@ -239,16 +214,13 @@ const AdminPanel = (props) => {
             ? { id: Date.now(), title: '', date: '', time: '', location: '', description: '', status: 'upcoming', registerLink: '' }
             : { id: Date.now(), title: '', date: '', description: '', registerLink: '', color: 'yellow' };
 
-        if (section === 'events' && newItem.registerLink === undefined) {
-            newItem.registerLink = '';
-        }
-
         setContent(prev => ({
             ...prev,
-            [section]: [newItem, ...prev[section]]
+            [section]: [...prev[section], newItem]
         }));
 
-        // Removed auto-scroll trigger
+        // Trigger scroll
+        setAutoScrollSection(section);
     };
 
     const handleRemoveItem = (section, index) => {
@@ -395,7 +367,7 @@ const AdminPanel = (props) => {
                                                     className="hidden"
                                                 />
                                             </label>
-                                            <span className="text-sm text-gray-500 truncate max-w-xs" id="file-count-hero">{heroFile ? heroFile.name : 'Dosya seçilmedi'}</span>
+                                            <span className="text-sm text-gray-500 truncate max-w-xs">{heroFile ? heroFile.name : 'Dosya seçilmedi'}</span>
                                         </div>
                                         {content.hero.imageUrl && (
                                             <div className="mt-4 relative inline-block group h-32 w-auto">
@@ -478,7 +450,7 @@ const AdminPanel = (props) => {
                                                     className="hidden"
                                                 />
                                             </label>
-                                            <span className="text-sm text-gray-500 truncate max-w-xs" id="file-count-about">{aboutFile ? aboutFile.name : 'Dosya seçilmedi'}</span>
+                                            <span className="text-sm text-gray-500 truncate max-w-xs">{aboutFile ? aboutFile.name : 'Dosya seçilmedi'}</span>
                                         </div>
                                         {content.about.imageUrl && (
                                             <div className="mt-4 relative inline-block group h-32 w-auto">
@@ -572,13 +544,13 @@ const AdminPanel = (props) => {
                                             <div className="mt-2">
                                                 <label className="text-sm font-medium text-gray-600 block mb-1">Durum</label>
                                                 <select
-                                                    className="border rounded p-2 w-full bg-gray-100 cursor-not-allowed opacity-70"
+                                                    className="border rounded p-2 w-full"
                                                     value={event.status}
-                                                    disabled
+                                                    onChange={(e) => handleArrayChange('events', index, 'status', e.target.value)}
                                                 >
-                                                    <option value="upcoming">Yaklaşan (Otomatik)</option>
-                                                    <option value="past">Geçmiş (Otomatik)</option>
-                                                    <option value="active">Bugün (Otomatik)</option>
+                                                    <option value="upcoming">Yaklaşan</option>
+                                                    <option value="past">Geçmiş</option>
+                                                    <option value="active">Aktif/Bugün</option>
                                                 </select>
                                             </div>
                                             <div className="mt-2">
@@ -649,7 +621,7 @@ const AdminPanel = (props) => {
                                             </div>
                                         </div>
                                     ))}
-
+                                    <div ref={eventsEndRef} />
                                 </div>
                             )}
 
@@ -759,7 +731,7 @@ const AdminPanel = (props) => {
                                             </div>
                                         </div>
                                     ))}
-
+                                    <div ref={announcementsEndRef} />
                                 </div>
                             )}
 
