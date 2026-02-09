@@ -25,7 +25,34 @@ const Home = () => {
 
     if (!content) return <div className="flex h-screen items-center justify-center">Yukleniyor...</div>;
 
-    const { hero, about, events, announcements, footer } = content;
+    const { hero, about, events: rawEvents, announcements: rawAnnouncements, footer } = content;
+
+    // Helper to parse Turkish date string to Date object
+    const parseDate = (dateStr) => {
+        if (!dateStr) return new Date(0);
+
+        const months = {
+            'Ocak': 0, 'Şubat': 1, 'Mart': 2, 'Nisan': 3, 'Mayıs': 4, 'Haziran': 5,
+            'Temmuz': 6, 'Ağustos': 7, 'Eylül': 8, 'Ekim': 9, 'Kasım': 10, 'Aralık': 11
+        };
+
+        try {
+            const parts = dateStr.split(' ');
+            if (parts.length < 3) return new Date(dateStr); // Try standard parse if not formatted
+
+            const day = parseInt(parts[0]);
+            const month = months[parts[1]] !== undefined ? months[parts[1]] : 0;
+            const year = parseInt(parts[2]);
+
+            return new Date(year, month, day);
+        } catch (e) {
+            return new Date(0);
+        }
+    };
+
+    // Sort events and announcements by date (Newest first)
+    const events = rawEvents ? [...rawEvents].sort((a, b) => parseDate(b.date) - parseDate(a.date)) : [];
+    const announcements = rawAnnouncements ? [...rawAnnouncements].sort((a, b) => parseDate(b.date) - parseDate(a.date)) : [];
 
     return (
         <div className="font-sans text-gray-900 bg-gray-50">
