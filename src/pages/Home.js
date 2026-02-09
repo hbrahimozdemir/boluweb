@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Calendar, Clock, MapPin, ChevronLeft, ChevronRight,
     Megaphone, Mail, Phone, Map, Instagram, Twitter, Linkedin, Facebook,
-    ArrowRight, X
+    ArrowRight, X, Menu, Target, Users, Lightbulb, Heart
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -12,6 +12,7 @@ const Home = () => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState({});
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         fetch('/content.json')
@@ -28,35 +29,83 @@ const Home = () => {
 
     return (
         <div className="font-sans text-gray-900 bg-gray-50">
-            {/* Hero Section */}
-            <div className="relative pt-16 pb-32 flex content-center items-center justify-center min-h-[75vh]">
-                <div
-                    className="absolute top-0 w-full h-full bg-center bg-cover"
-                    style={{
-                        backgroundImage: `url('${hero.imageUrl}')`,
-                    }}
-                >
-                    <span id="blackOverlay" className="w-full h-full absolute opacity-60 bg-black"></span>
+            {/* Header */}
+            <header className="fixed w-full top-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm transition-all duration-300">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-20">
+                        {/* Logo */}
+                        <div className="flex-shrink-0 flex items-center gap-3">
+                            <img className="h-12 w-auto" src="/logo.png" alt="BAİBÜ Kampüs Kooperatifi" />
+                            <span className="font-bold text-xl text-yellow-700 hidden md:block">BAİBÜ Kampüs Kooperatifi</span>
+                        </div>
+
+                        {/* Desktop Menu */}
+                        <div className="hidden md:flex items-center space-x-8">
+                            <a href="#about" className="text-gray-600 hover:text-yellow-600 font-medium transition">Hakkımızda</a>
+                            <a href="#events" className="text-gray-600 hover:text-yellow-600 font-medium transition">Etkinlikler</a>
+                            <a href="#announcements" className="text-gray-600 hover:text-yellow-600 font-medium transition">Duyurular</a>
+                            <button
+                                onClick={() => document.getElementById('footer').scrollIntoView({ behavior: 'smooth' })}
+                                className="bg-green-600 text-white px-6 py-2 rounded-full font-medium hover:bg-green-700 transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                            >
+                                Bize Ulaşın
+                            </button>
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <div className="md:hidden flex items-center">
+                            <button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="text-gray-600 hover:text-yellow-600 focus:outline-none"
+                            >
+                                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
+                {/* Mobile Menu */}
+                {isMenuOpen && (
+                    <div className="md:hidden bg-white border-t border-gray-100 shadow-lg absolute w-full">
+                        <div className="px-4 pt-2 pb-4 space-y-1">
+                            <a href="#about" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-yellow-600 hover:bg-yellow-50">Hakkımızda</a>
+                            <a href="#events" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-yellow-600 hover:bg-yellow-50">Etkinlikler</a>
+                            <a href="#announcements" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-yellow-600 hover:bg-yellow-50">Duyurular</a>
+                            <button
+                                onClick={() => {
+                                    document.getElementById('footer').scrollIntoView({ behavior: 'smooth' });
+                                    setIsMenuOpen(false);
+                                }}
+                                className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-green-600 hover:bg-green-50"
+                            >
+                                İletişim
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </header>
+
+            {/* Hero Section */}
+            <div className="relative pt-32 pb-32 flex content-center items-center justify-center min-h-[75vh] bg-[#fdfbf7]">
                 <div className="container relative mx-auto px-4 z-10">
                     <div className="items-center flex flex-wrap">
                         <div className="w-full lg:w-8/12 px-4 ml-auto mr-auto text-center">
                             {/* Logos Row - Main logo centered with partner logos on sides */}
                             <div className="flex items-center justify-center gap-4 md:gap-8 mb-8 flex-wrap">
-                                <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white/80 rounded-full p-2 backdrop-blur-sm shadow-lg transform hover:scale-105 transition-transform duration-300">
+                                <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
                                     <img src="/tubitak.png" alt="TÜBİTAK Logo" className="max-w-full max-h-full object-contain" />
                                 </div>
-                                <div className="flex items-center justify-center w-32 h-32 md:w-40 md:h-40 bg-white/90 rounded-full p-2 backdrop-blur-sm shadow-xl z-10 transform hover:scale-110 transition-transform duration-300">
+                                <div className="flex items-center justify-center w-32 h-32 md:w-40 md:h-40 bg-white rounded-full p-2 shadow-xl z-10 transform hover:scale-110 transition-transform duration-300 border border-gray-100">
                                     <img src="/logo.png" alt="BAİBÜ Kampüs Kooperatifi" className="max-w-full max-h-full object-contain" />
                                 </div>
-                                <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white/80 rounded-full p-2 backdrop-blur-sm shadow-lg transform hover:scale-105 transition-transform duration-300">
+                                <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
                                     <img src="/baibu-logo.png" alt="BAİBÜ Logo" className="max-w-full max-h-full object-contain" />
                                 </div>
                             </div>
-                            <h1 className="text-white font-bold text-5xl mb-6 drop-shadow-lg">
-                                {hero.title}
+                            <h1 className="text-yellow-700 font-bold text-5xl mb-6 drop-shadow-sm">
+                                {hero.title && hero.title.split('Hakkında')[0]} <span className="text-emerald-600">Hakkında</span>
                             </h1>
-                            <p className="mt-4 text-lg text-gray-200 drop-shadow-md leading-relaxed whitespace-pre-line">
+                            <p className="mt-4 text-lg text-gray-600 leading-relaxed whitespace-pre-line max-w-2xl mx-auto">
                                 {hero.description}
                             </p>
                         </div>
@@ -64,8 +113,60 @@ const Home = () => {
                 </div>
             </div>
 
+
+            {/* Info Cards Section */}
+            <div className="relative -mt-24 pb-16 z-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* Misyonumuz - Yellow */}
+                        <div className="bg-yellow-100/90 backdrop-blur rounded-xl p-6 shadow-xl border border-yellow-200 hover:transform hover:-translate-y-1 transition duration-300">
+                            <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
+                                <Target size={24} />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Misyonumuz</h3>
+                            <p className="text-gray-700 text-sm leading-relaxed">
+                                Deri endüstrisi atıklarını değerli, yenilikçi ürünlere dönüştürerek, döngüsel sürdürülebilirliği ve döngüsel ekonomi uygulamalarını teşvik etmek.
+                            </p>
+                        </div>
+
+                        {/* Öğrenci Liderliğinde Girişim - Green/Cyan */}
+                        <div className="bg-emerald-100/90 backdrop-blur rounded-xl p-6 shadow-xl border border-emerald-200 hover:transform hover:-translate-y-1 transition duration-300">
+                            <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
+                                <Users size={24} />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Öğrenci Liderliğinde Girişim</h3>
+                            <p className="text-gray-700 text-sm leading-relaxed">
+                                Sürdürülebilirliğe katkı sunan sıfır atık ve döngüsel ekonomi ilkeleriyle öğrenciler tarafından yürütülen bir girişim.
+                            </p>
+                        </div>
+
+                        {/* İnovasyon Odaklılık - White/Gray */}
+                        <div className="bg-white/90 backdrop-blur rounded-xl p-6 shadow-xl border border-gray-200 hover:transform hover:-translate-y-1 transition duration-300">
+                            <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
+                                <Lightbulb size={24} />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">İnovasyon Odaklılık</h3>
+                            <p className="text-gray-700 text-sm leading-relaxed">
+                                Malzeme kullanımını en üst düzeye çıkarmak ve yüksek kaliteli sürdürülebilir ürünler için son teknoloji teknikler ve tasarımlar geliştirmek.
+                            </p>
+                        </div>
+
+                        {/* Toplumsal Etki - Pink */}
+                        <div className="bg-pink-100/90 backdrop-blur rounded-xl p-6 shadow-xl border border-pink-200 hover:transform hover:-translate-y-1 transition duration-300">
+                            <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
+                                <Heart size={24} />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Toplumsal Etki</h3>
+                            <p className="text-gray-700 text-sm leading-relaxed">
+                                Sürdürülebilir uygulamalar hakkında farkındalık oluştururken, ekonomik fırsatlar yaratmak ve çevresel ayak izini azaltmak.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* About Section */}
-            <section className="py-16 bg-yellow-50">
+            <section id="about" className="py-16 bg-yellow-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid md:grid-cols-2 gap-12 items-center">
                         <div>
@@ -239,7 +340,7 @@ const Home = () => {
             </section>
 
             {/* Footer */}
-            <footer className="bg-gray-900 text-white py-12">
+            <footer id="footer" className="bg-gray-900 text-white py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                         <div>
@@ -283,131 +384,135 @@ const Home = () => {
             </footer>
 
             {/* Event Modal */}
-            {selectedEvent && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden max-h-[90vh] overflow-y-auto">
-                        <div className="relative h-64 bg-gray-900 group">
-                            {selectedEvent.images && selectedEvent.images.length > 0 ? (
-                                <>
-                                    <img
-                                        src={selectedEvent.images[0]}
-                                        alt={selectedEvent.title}
-                                        className="w-full h-full object-contain bg-black"
-                                        onError={(evt) => {
-                                            evt.target.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop";
-                                        }}
-                                    />
-                                    {selectedEvent.images.length > 1 && (
-                                        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-                                            {selectedEvent.images.map((img, idx) => (
-                                                <div key={idx} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-white' : 'bg-white/50'}`}></div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop" alt={selectedEvent.title} className="w-full h-full object-cover opacity-70" />
-                            )}
-                            <button onClick={() => setSelectedEvent(null)} className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition"><X size={24} /></button>
-                        </div>
-                        <div className="p-8">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedEvent.title}</h2>
-                            <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6 border-b border-gray-100 pb-6">
-                                <div className="flex items-center"><Calendar size={18} className="mr-2 text-green-600" /><span className="font-medium">{selectedEvent.date}</span></div>
-                                <div className="flex items-center"><Clock size={18} className="mr-2 text-green-600" /><span className="font-medium">{selectedEvent.time}</span></div>
-                                <div className="flex items-center"><MapPin size={18} className="mr-2 text-green-600" /><span className="font-medium">{selectedEvent.location}</span></div>
-                            </div>
-
-                            <h3 className="text-lg font-semibold text-gray-800 mb-2">Etkinlik Hakkında</h3>
-                            <p className="text-gray-600 mb-6 leading-relaxed">{selectedEvent.description}</p>
-
-                            {selectedEvent.images && selectedEvent.images.length > 0 && (
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
-                                    {selectedEvent.images.map((img, idx) => (
-                                        <img key={idx} src={img} alt={`Gallery ${idx}`} className="h-24 w-full object-cover rounded cursor-pointer hover:opacity-80" onClick={() => window.open(img, '_blank')} />
-                                    ))}
-                                </div>
-                            )}
-
-                            <div className="mt-8 flex justify-end">
-                                <button onClick={() => setSelectedEvent(null)} className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition">Kapat</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Announcement Detail Modal */}
-            {selectedAnnouncement && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
-                        <div className={`p-6 bg-yellow-50 border-b flex justify-between items-start sticky top-0 bg-opacity-95 backdrop-blur-sm z-10 rounded-t-2xl`}>
-                            <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-full bg-white/60 shadow-sm`}>
-                                    <Megaphone size={24} className="text-yellow-700" />
-                                </div>
-                                <div>
-                                    <h2 className="text-xl font-bold text-gray-900">{selectedAnnouncement.title}</h2>
-                                    <p className="text-sm text-gray-600">{selectedAnnouncement.date}</p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setSelectedAnnouncement(null)}
-                                className="p-2 rounded-full transition hover:bg-gray-200 text-gray-700"
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        <div className="p-8">
-                            <div className="prose max-w-none">
-                                <p className="text-gray-700 leading-relaxed mb-6 whitespace-pre-line">
-                                    {selectedAnnouncement.description}
-                                </p>
-
-                                {selectedAnnouncement.images && selectedAnnouncement.images.length > 0 && (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                                        {selectedAnnouncement.images.map((image, index) => (
-                                            <div key={index} className="rounded-xl overflow-hidden shadow-md">
-                                                <img
-                                                    src={image}
-                                                    alt={`${selectedAnnouncement.title} - ${index + 1}`}
-                                                    className="w-full h-auto object-cover hover:scale-105 transition duration-500"
-                                                    onError={(evt) => { evt.target.style.display = 'none'; }}
-                                                />
+            {
+                selectedEvent && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden max-h-[90vh] overflow-y-auto">
+                            <div className="relative h-64 bg-gray-900 group">
+                                {selectedEvent.images && selectedEvent.images.length > 0 ? (
+                                    <>
+                                        <img
+                                            src={selectedEvent.images[0]}
+                                            alt={selectedEvent.title}
+                                            className="w-full h-full object-contain bg-black"
+                                            onError={(evt) => {
+                                                evt.target.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop";
+                                            }}
+                                        />
+                                        {selectedEvent.images.length > 1 && (
+                                            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                                                {selectedEvent.images.map((img, idx) => (
+                                                    <div key={idx} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-white' : 'bg-white/50'}`}></div>
+                                                ))}
                                             </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop" alt={selectedEvent.title} className="w-full h-full object-cover opacity-70" />
+                                )}
+                                <button onClick={() => setSelectedEvent(null)} className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition"><X size={24} /></button>
+                            </div>
+                            <div className="p-8">
+                                <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedEvent.title}</h2>
+                                <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6 border-b border-gray-100 pb-6">
+                                    <div className="flex items-center"><Calendar size={18} className="mr-2 text-green-600" /><span className="font-medium">{selectedEvent.date}</span></div>
+                                    <div className="flex items-center"><Clock size={18} className="mr-2 text-green-600" /><span className="font-medium">{selectedEvent.time}</span></div>
+                                    <div className="flex items-center"><MapPin size={18} className="mr-2 text-green-600" /><span className="font-medium">{selectedEvent.location}</span></div>
+                                </div>
+
+                                <h3 className="text-lg font-semibold text-gray-800 mb-2">Etkinlik Hakkında</h3>
+                                <p className="text-gray-600 mb-6 leading-relaxed">{selectedEvent.description}</p>
+
+                                {selectedEvent.images && selectedEvent.images.length > 0 && (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
+                                        {selectedEvent.images.map((img, idx) => (
+                                            <img key={idx} src={img} alt={`Gallery ${idx}`} className="h-24 w-full object-cover rounded cursor-pointer hover:opacity-80" onClick={() => window.open(img, '_blank')} />
                                         ))}
                                     </div>
                                 )}
 
-                                {selectedAnnouncement.link && (
-                                    <div className="flex justify-center mt-8">
-                                        <a
-                                            href={selectedAnnouncement.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-600 to-green-600 text-white font-semibold rounded-xl hover:shadow-lg transition transform hover:-translate-y-0.5"
-                                        >
-                                            <ArrowRight size={20} className="mr-2" />
-                                            Başvuru Formunu Görüntüle
-                                        </a>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="mt-8 pt-6 border-t flex justify-end">
-                                <button
-                                    onClick={() => setSelectedAnnouncement(null)}
-                                    className="px-6 py-2 text-gray-600 hover:text-gray-900 font-medium transition"
-                                >
-                                    Kapat
-                                </button>
+                                <div className="mt-8 flex justify-end">
+                                    <button onClick={() => setSelectedEvent(null)} className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition">Kapat</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+
+            {/* Announcement Detail Modal */}
+            {
+                selectedAnnouncement && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+                            <div className={`p-6 bg-yellow-50 border-b flex justify-between items-start sticky top-0 bg-opacity-95 backdrop-blur-sm z-10 rounded-t-2xl`}>
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-full bg-white/60 shadow-sm`}>
+                                        <Megaphone size={24} className="text-yellow-700" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-bold text-gray-900">{selectedAnnouncement.title}</h2>
+                                        <p className="text-sm text-gray-600">{selectedAnnouncement.date}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedAnnouncement(null)}
+                                    className="p-2 rounded-full transition hover:bg-gray-200 text-gray-700"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="p-8">
+                                <div className="prose max-w-none">
+                                    <p className="text-gray-700 leading-relaxed mb-6 whitespace-pre-line">
+                                        {selectedAnnouncement.description}
+                                    </p>
+
+                                    {selectedAnnouncement.images && selectedAnnouncement.images.length > 0 && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                            {selectedAnnouncement.images.map((image, index) => (
+                                                <div key={index} className="rounded-xl overflow-hidden shadow-md">
+                                                    <img
+                                                        src={image}
+                                                        alt={`${selectedAnnouncement.title} - ${index + 1}`}
+                                                        className="w-full h-auto object-cover hover:scale-105 transition duration-500"
+                                                        onError={(evt) => { evt.target.style.display = 'none'; }}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {selectedAnnouncement.link && (
+                                        <div className="flex justify-center mt-8">
+                                            <a
+                                                href={selectedAnnouncement.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-600 to-green-600 text-white font-semibold rounded-xl hover:shadow-lg transition transform hover:-translate-y-0.5"
+                                            >
+                                                <ArrowRight size={20} className="mr-2" />
+                                                Başvuru Formunu Görüntüle
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="mt-8 pt-6 border-t flex justify-end">
+                                    <button
+                                        onClick={() => setSelectedAnnouncement(null)}
+                                        className="px-6 py-2 text-gray-600 hover:text-gray-900 font-medium transition"
+                                    >
+                                        Kapat
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                )}
+        </div >
     );
 };
 
