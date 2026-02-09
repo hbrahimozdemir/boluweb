@@ -1,0 +1,218 @@
+{
+    "hero": {
+        "title": "BAİBÜ Kampüs Kooperatifi Hakkında",
+        "description": "Sıfır atık prensipleri ve döngüsel ekonomi metodolojileri aracılığıyla sürdürülebilir deri inovasyonuna öncülük eden, TÜBİTAK destekli bir projedir. BAİBÜ Kampüs Kooperatifi TÜBİTAK-3005 Başarılı Genç Girişimciliğin Arttırılması için Öğrenci Kooperatifleri Modeli Projesinin bir çıktısı olarak hayata geçmiştir.",
+        "imageUrl": "uploads/1770659676_bilgisayar.png"
+    },
+    "about": {
+        "title": "Sıfır Atık ile Döngüsel Ekonomi",
+        "text1": "Yenilikçi yaklaşımımız, her deri parçasının kullanılmasını sağlayarak, atık olacak materyalleri güzel, fonksiyonel ürünlere dönüştürüyor. Dikkatli tasarım ve işçilikle neredeyse mükemmel malzeme verimliliği sağlıyoruz.",
+        "text2": "Döngüsel ekonomi prensiplerimizi uygulayarak, sadece atıkları azaltmakla kalmıyor, aynı zamanda deri ürünlerinin sürdürülebilir ve sorumlu bir şekilde nasıl yaratılabileceğini yeniden tasarlıyoruz.",
+        "imageUrl": "leather.jpg"
+    },
+    "events": [
+        {
+            "id": 10,
+            "title": "Eğitim Sertifikaları Katılımcılara Teslim Edildi",
+            "date": "14 Aralık 2026",
+            "time": "14:00",
+            "location": "KARMER / Gerede MYO",
+            "description": "Projemiz kapsamında verilen eğitim ve seminer serisine katılan öğrencilere KARMER tarafından düzenlenen katılım sertifikaları verildi.",
+            "status": "past",
+            "color": "green",
+            "images": [
+                "events/karmer-1.jpeg",
+                "events/karmer-2.jpeg"
+            ]
+        },
+        {
+            "id": 1,
+            "title": "Deri Ürün Tasarım ve Üretim Workshopu",
+            "date": "25 Aralık 2025",
+            "time": "13:30",
+            "location": "Atölye",
+            "description": "Deri atık parçalardan uygulamalı deri obje üretimi. Basit el aletleri, lazer makinaları, inovatif ürünler.",
+            "status": "upcoming",
+            "color": "orange",
+            "images": [
+                "events/25.12 workshop.jpeg",
+                "events/25.12 workshop (2).jpeg",
+                "events/25.12 workshop (3).jpeg",
+                "events/25.12 workshop (5).jpeg",
+                "events/25.12 workshop (4).jpeg"
+            ]
+        },
+        {
+            "id": 2,
+            "title": "E-ticaret ve Mikro İhracat",
+            "date": "24 Aralık 2025",
+            "time": "14:00",
+            "location": "Trendyol Yöneticisi",
+            "description": "E-ticaret ve E-ihracata bakış. Trendyol uygulamaları.",
+            "status": "active",
+            "color": "green",
+            "images": [
+                "events/24.12.2025.jpeg",
+                "events/24.12.2025 (2).jpeg"
+            ]
+        },
+        {
+            "id": 3,
+            "title": "Girişimcilik-2: Pazara Giriş",
+            "date": "23 Aralık 2025",
+            "time": "14:00",
+            "location": "Konferans Salonu",
+            "description": "Go-to market strategy. Müşteri odaklı pazara giriş stratejisi. Müşteri nasıl bulunur?",
+            "status": "past",
+            "color": "gray",
+            "images": [
+                "events/23.12.25. Go-to-market-strategy.jpeg",
+                "events/23.12.25. Go-to-market-strategy (2).jpeg"
+            ]
+        },
+        {
+            "id": 4,
+            "title": "Temel İşletmecilik",
+            "date": "18 Aralık 2025",
+            "time": "13:30",
+            "location": "Onur Özevin",
+            "description": "Yeni bir girişim kurma süreçleri. İşletmecilik 101. Kampüskoop hakkında bilgilendirme.",
+            "status": "upcoming",
+            "color": "orange",
+            "images": []
+        },
+        {
+            "id": 5,
+            "title": "Girişimcilik-1: İş Modeli Kanvası",
+            "date": "17 Aralık 2025",
+            "time": "14:00",
+            "location": "Soydan Cengiz",
+            "description": "İş Modeli Kanvası nedir, nasıl yapılır? Kendi iş modeli kanvasını Yarat.",
+            "status": "active",
+            "color": "green",
+            "images": [
+                "events/17.12.2025 BMC.jpeg",
+                "events/17.12.2025 BMC (2).jpeg"
+            ]
+        },
+        {
+            "id": 6,
+            "title": "E-ticaret Stratejileri",
+            "date": "11 Aralık 2025",
+            "time": "13:30",
+            "location": "Mehmet Fazlı Türker",
+            "description": "Deri ürünleri girişimimiz. E-ticaret nasıl yapılır?",
+            "status": "past",
+            "color": "gray",
+            "images": [
+                "events/11.12.25 E-ticaret stratejileri.jpeg",
+                "events/11.12.25 E-ticaret stratejileri (2).jpeg",
+                "events/11.12.25 E-ticaret stratejileri (3).jpeg",
+                "events/11.12.25 E-ticaret stratejileri (4).jpeg"
+            ]
+        },
+        {
+            "id": 7,
+            "title": "Sürdürülebilirlik İlkeleri",
+            "date": "10 Aralık 2025",
+            "time": "13:30",
+            "location": "Doç. Dr. Gamze Doğdu",
+            "description": "Sürdürülebilirlik kavramına genel bakış, Sıfır Atık, Döngüsel Ekonomi. Karbon Ayak izimi nasıl azaltırım?",
+            "status": "upcoming",
+            "color": "orange",
+            "images": [
+                "events/10.12.25 Sürdürülebilirlik İlkeleri.jpeg",
+                "events/10.12.25 Sürdürülebilirlik İlkeleri (2).jpeg",
+                "events/10.12.25 Sürdürülebilirlik İlkeleri (3).jpeg",
+                "events/10.12.25 Sürdürülebilirlik İlkeleri (4).jpeg"
+            ]
+        },
+        {
+            "id": 8,
+            "title": "Muhasebe Uygulamaları Eğitimi",
+            "date": "04 Aralık 2025",
+            "time": "13:30",
+            "location": "Bolu SMMM Eğitmenleri",
+            "description": "Bilgisayarlı muhasebe uygulamaları, LUCA programı eğitimi, kendi işinin muhasebesini nasıl tutarsın?",
+            "status": "active",
+            "color": "green",
+            "images": [
+                "events/04.12.25 Muhasebe Uygulamaları.jpeg",
+                "events/04.12.25 Muhasebe Uygulamaları (2).jpeg",
+                "events/04.12.25 Muhasebe Uygulamaları (3).jpeg",
+                "events/04.12.25 Muhasebe Uygulamaları (4).jpeg",
+                "events/04.12.25 Muhasebe Uygulamaları (5).jpeg"
+            ]
+        },
+        {
+            "id": 9,
+            "title": "Muhasebe ve Kariyer Söyleşisi",
+            "date": "03 Aralık 2025",
+            "time": "13:30",
+            "location": "İlkay Bağatır (Bolu SMMM Başkanı)",
+            "description": "Muhasebe mesleğinin dünü, bugünü ve geleceği, mesleki kariyer fırsatları, yeni iş kurma prosedürleri konusunda söyleşi.",
+            "status": "past",
+            "color": "gray",
+            "images": [
+                "events/03.12.25 Muhasebe Mesleği veKariyer.jpeg",
+                "events/03.12.25 Muhasebe Mesleği veKariyer (2).jpeg"
+            ]
+        }
+    ],
+    "announcements": [
+        {
+            "id": 6,
+            "title": "BAİBÜ Kampüs İşletme ve Tüketim Kooperatifi Kuruluş Başvurusu Yapıldı",
+            "date": "15 Ocak 2026",
+            "description": "Projemiz kapsamında BAİBÜ Kampüs İşletme ve Tüketim Kooperatifi'nin kuruluş başvurusu, kurucu ortaklar ve proje ekibinin katılımıyla Gerede Ticaret ve Sanayi Odası'nda yapıldı.",
+            "color": "mint",
+            "images": [
+                "events/coop-establishment-1.jpeg",
+                "events/coop-establishment-2.jpeg"
+            ]
+        },
+        {
+            "id": 1,
+            "title": "BAİBÜ Kampüs İşletme ve Tüketim Kooperatifi Kuruldu!",
+            "date": "14 Nisan 2025",
+            "description": "TÜBİTAK destekli projemiz kapsamında BAİBÜ Kampüs İşletme ve Tüketim Kooperatifinin resmi kuruluş başvurusunu gerçekleştirdik. Proje ekibimiz ve öğrencilerimizden oluşan ilk kurucu ortaklar, proje partnerimiz olan Gerede Ticaret Sanayi Odasında kuruluş imzalarını attılar. Üniversitemiz, şehrimiz ve ülkemize hayırlı olmasını diliyoruz.",
+            "color": "mint"
+        },
+        {
+            "id": 2,
+            "title": "Fiber Lazer Makinesi ve İş Bilgisayarı Teslim Alındı",
+            "date": "26 Mart 2025",
+            "description": "Projemiz kapsamında, deri parçalarını katma değerli ürünlere dönüştürmekte kullanacağımız Fiber Lazer Makinasını ve iş bilgisayarını teslim aldık. Üretim kapasitemizi artıracak bu teknoloji ile sıfır atık hedeflerimize daha hızlı ulaşacağız.",
+            "color": "gray"
+        },
+        {
+            "id": 3,
+            "title": "Girişimcilik Tutum ve Algı Anketi",
+            "date": "01 Mart 2025",
+            "description": "Öğrencilerin girişimcilik tutum ve algısına yönelik anketimize katılarak projemize destek olabilirsiniz. Görüşleriniz modelimizin geliştirilmesi için çok değerli.",
+            "color": "yellow",
+            "link": "https://forms.gle/MdbwTHc2AMPZeYbu5"
+        },
+        {
+            "id": 4,
+            "title": "Eğitim Serisi Başlıyor Kayıt Olun!",
+            "date": "01 Ekim 2025",
+            "description": "Temel İşletmecilik, Girişimcilik, Muhasebe Uygulamaları, e-Ticaret, Pazarlama, Kooperatifçilik ve Sürdürülebilirlik konularında uzman akademisyen ve iş insanlarının katılımıyla gerçekleştirilecek eğitim serisine katılmak için formu doldurmanız yeterli.",
+            "color": "mint",
+            "link": "https://forms.gle/iEwGDJ436orTXsxNA"
+        },
+        {
+            "id": 5,
+            "title": "TÜBİTAK 3005 Proje Desteği Kazanıldı",
+            "date": "09 Ekim 2024",
+            "description": "'Sosyal ve Beşeri Bilimlerde Yenilikçi Çözümler Araştırma Projeleri Destek Programı' kapsamında sunmuş olduğumuz 'Başarılı Genç Girişimciliğinin Arttırılması için Öğrenci Kooperatifleri Modeli' başlıklı projemiz TÜBİTAK tarafından desteklenmeye hak kazandı.",
+            "color": "gray"
+        }
+    ],
+    "footer": {
+        "email": "info@kampuskoop.edu.tr",
+        "phone": "374 311 3228",
+        "address": "Bolu Abant İzzet Baysal Üniversitesi Gerede MYO",
+        "copyright": "© 2025 BAİBÜ Kampüs Kooperatifi. Tüm hakları saklıdır."
+    }
+}
