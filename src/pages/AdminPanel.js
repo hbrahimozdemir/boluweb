@@ -35,22 +35,40 @@ const AdminPanel = (props) => {
             .catch(err => console.error("Veri yuklenemedi:", err));
     };
 
+    const [debugText, setDebugText] = useState('');
+
     const fetchBackups = () => {
-        fetch('/api.php?action=list_backups')
+        setDebugText('Loading...');
+        // Proxy uzerinden degil dogrudan PHP sunucusuna gidelim
+        fetch('http://localhost:8000/api.php?action=list_backups&t=' + Date.now())
             .then(res => {
                 if (!res.ok) throw new Error('Network response was not ok');
-                return res.json();
+                return res.text().then(text => {
+                    try {
+                        const json = JSON.parse(text);
+                        return json;
+                    } catch (e) {
+                        const errorMsg = "JSON PARSE ERROR:\n" + text.slice(0, 500);
+                        setDebugText(errorMsg);
+                        throw new Error('Invalid JSON: ' + errorMsg); // Pass msg here
+                    }
+                });
             })
             .then(data => {
                 if (data.success) {
                     setBackups(data.backups);
+                    setDebugText("Success: Found " + (data.backups ? data.backups.length : 0));
                 } else {
                     console.error("Backup list error:", data.message);
+                    setDebugText("API Error: " + data.message);
                 }
             })
             .catch(err => {
                 console.error("Backup fetch error:", err);
-                // Kullaniciya hata gostermek isterseniz state'e ekleyebilirsiniz
+                // Only overwrite if it's NOT the invalid JSON error we just threw and handled
+                if (err.message && !err.message.includes('Invalid JSON')) {
+                    setDebugText("Fetch Error: " + err.message);
+                }
             });
     };
 
@@ -97,6 +115,8 @@ const AdminPanel = (props) => {
                 setContent(result.data);
                 setHeroFile(null);
                 setAboutFile(null);
+                // Eğer History sekmesi açıksa listeyi güncelle (veya arka planda)
+                fetchBackups();
             } else {
                 setMessage('Hata: ' + result.message);
             }
@@ -123,6 +143,27 @@ const AdminPanel = (props) => {
             }
         } catch (error) {
             setMessage('Geri yükleme bağlantı hatası.');
+        }
+    };
+
+    const handleDeleteBackup = async (filename) => {
+        if (!window.confirm('Bu yedeği kalıcı olarak silmek istediğinize emin misiniz?')) return;
+
+        try {
+            // Proxy bypass (localhost:8000)
+            const response = await fetch(`http://localhost:8000/api.php?action=delete_backup&file=${encodeURIComponent(filename)}`);
+            const result = await response.json();
+
+            if (result.success) {
+                // Listeden kaldir
+                setBackups(prev => prev.filter(b => b.file !== filename));
+                setMessage('Yedek silindi.');
+            } else {
+                setMessage('Hata: ' + result.message);
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+            setMessage('Silme işlemi sırasında hata oluştu.');
         }
     };
 
@@ -173,6 +214,22 @@ const AdminPanel = (props) => {
         }));
     };
 
+    const formatDate = (dateString) => {
+        try {
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('tr-TR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                weekday: 'long',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        } catch (e) {
+            return dateString;
+        }
+    };
+
     if (!content) return <div className="p-8 text-center">Yükleniyor...</div>;
 
     return (
@@ -212,20 +269,36 @@ const AdminPanel = (props) => {
                         <div className="space-y-4">
                             <h3 className="text-lg font-bold mb-4">Değişiklik Geçmişi</h3>
                             <p className="text-sm text-gray-500 mb-4">Eski bir tarihe dönmek için "Geri Yükle" butonuna tıklayın.</p>
-                            {backups.length === 0 && <p>Henüz yedek yok.</p>}
+
+                            {/* Debug info - Remove after solving */}
+                            {backups && <div className="text-xs text-gray-400 mb-2">Total backups found: {backups.length}</div>}
+                            {debugText && <div className="text-xs text-red-400 mb-2 p-2 bg-gray-100 border rounded whitespace-pre-wrap">{debugText}</div>}
+
+                            {backups.length === 0 && <p>Henüz yedek yok. (Klasör boş veya okunamadı)</p>}
                             <ul className="space-y-2">
                                 {backups.map((backup, idx) => (
-                                    <li key={idx} className="flex justify-between items-center p-3 border rounded hover:bg-gray-50">
+                                    <li key={idx} className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 group transition-all">
                                         <div>
-                                            <span className="font-medium block">{backup.date}</span>
-                                            <span className="text-xs text-gray-400">{backup.file}</span>
+                                            <span className="font-medium block text-gray-800">{formatDate(backup.date)}</span>
+                                            <span className="text-[10px] text-gray-400 font-mono opacity-50 group-hover:opacity-100 transition-opacity">
+                                                {backup.file}
+                                            </span>
                                         </div>
-                                        <button
-                                            onClick={() => handleRestore(backup.file)}
-                                            className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
-                                        >
-                                            Geri Yükle
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleRestore(backup.file)}
+                                                className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
+                                            >
+                                                Geri Yükle
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteBackup(backup.file)}
+                                                className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+                                                title="Yedeği Sil"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>

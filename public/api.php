@@ -2,6 +2,9 @@
 // Output buffering baslat - istenmeyen ciktilari yakalamak icin
 ob_start();
 
+// Zaman dilimi ayari
+date_default_timezone_set('Europe/Istanbul');
+
 // Hata raporlamayi kapatalim (JSON bozulmasini onlemek icin)
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
@@ -10,6 +13,7 @@ error_reporting(E_ALL);
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     // Tamponu temizle ve cik
@@ -54,24 +58,69 @@ try {
         }
     }
 
+    // Yedek silme islemi
+    if (isset($_GET['action']) && $_GET['action'] === 'delete_backup') {
+        $file = $_GET['file'] ?? '';
+        $backupDir = __DIR__ . '/backups/';
+        
+        // Guvenlik kontrolu: Sadece dosya adi olmali, yol icermemeli ve json olmali
+        if ($file && strpos($file, '/') === false && strpos($file, 'content_') === 0 && strpos($file, '.json') !== false && file_exists($backupDir . $file)) {
+            if (unlink($backupDir . $file)) {
+                sendJson(['success' => true, 'message' => 'Yedek silindi.']);
+            } else {
+                sendError('Dosya silinemedi.');
+            }
+        } else {
+            sendError('Gecersiz dosya adi veya dosya bulunamadi.');
+        }
+    }
+
     // Yedekleri listeleme
     if (isset($_GET['action']) && $_GET['action'] === 'list_backups') {
-        $backups = glob("backups/content_*.json");
+        $backupDir = __DIR__ . '/backups';
+        
         $list = [];
-        if ($backups) {
-            foreach ($backups as $backup) {
-                $list[] = [
-                    'file' => basename($backup),
-                    'date' => date("Y-m-d H:i:s", filemtime($backup))
-                ];
+        
+        // Yontem 1: Scandir (Daha guvenilir olabilir)
+        if (is_dir($backupDir)) {
+            $files = scandir($backupDir);
+            foreach ($files as $file) {
+                if ($file === '.' || $file === '..') continue;
+                if (strpos($file, 'content_') === 0 && strpos($file, '.json') !== false) {
+                    $fullPath = $backupDir . '/' . $file;
+                    $list[] = [
+                        'file' => $file,
+                        'date' => date("Y-m-d H:i:s", filemtime($fullPath))
+                    ];
+                }
             }
-            // Yeniden eskiye sirala
-            usort($list, function($a, $b) {
-                return strcmp($b['file'], $a['file']);
-            });
         }
         
-        sendJson(['success' => true, 'backups' => $list]);
+        // Eger bos ise Glob deneyelim (yedek plan)
+        if (empty($list)) {
+            $globFiles = glob($backupDir . "/content_*.json");
+            if ($globFiles) {
+                foreach ($globFiles as $path) {
+                    $list[] = [
+                        'file' => basename($path),
+                        'date' => date("Y-m-d H:i:s", filemtime($path))
+                    ];
+                }
+            }
+        }
+
+        // Yeniden eskiye sirala
+        usort($list, function($a, $b) {
+            return strcmp($b['file'], $a['file']);
+        });
+        
+        // Debug bilgisi de ekleyelim
+        sendJson([
+            'success' => true, 
+            'backups' => $list,
+            'debug_dir' => $backupDir,
+            'debug_count' => count($list) 
+        ]);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
