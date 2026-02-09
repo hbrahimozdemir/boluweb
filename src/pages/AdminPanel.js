@@ -300,11 +300,7 @@ const AdminPanel = (props) => {
                             <h3 className="text-lg font-bold mb-4">Değişiklik Geçmişi</h3>
                             <p className="text-sm text-gray-500 mb-4">Eski bir tarihe dönmek için "Geri Yükle" butonuna tıklayın.</p>
 
-                            {/* Debug info - Remove after solving */}
-                            {backups && <div className="text-xs text-gray-400 mb-2">Total backups found: {backups.length}</div>}
-                            {debugText && <div className="text-xs text-red-400 mb-2 p-2 bg-gray-100 border rounded whitespace-pre-wrap">{debugText}</div>}
-
-                            {backups.length === 0 && <p>Henüz yedek yok. (Klasör boş veya okunamadı)</p>}
+                            {backups.length === 0 && <p>Henüz yedek yok.</p>}
                             <ul className="space-y-2">
                                 {backups.map((backup, idx) => (
                                     <li key={idx} className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 group transition-all">
