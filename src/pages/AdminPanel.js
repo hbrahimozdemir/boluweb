@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, X, Check } from 'lucide-react';
 
@@ -20,6 +20,12 @@ const AdminPanel = (props) => {
     const [aboutFile, setAboutFile] = useState(null);
 
     const [deleteConfirm, setDeleteConfirm] = useState(null); // { section, itemIndex, imgIndex }
+
+    // Auto-scroll refs
+    const eventsEndRef = useRef(null);
+    const announcementsEndRef = useRef(null);
+    const [autoScrollSection, setAutoScrollSection] = useState(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -78,6 +84,17 @@ const AdminPanel = (props) => {
             fetchBackups();
         }
     }, [activeTab]);
+
+    // Handle auto-scroll logic
+    useEffect(() => {
+        if (autoScrollSection === 'events' && eventsEndRef.current) {
+            eventsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            setAutoScrollSection(null);
+        } else if (autoScrollSection === 'announcements' && announcementsEndRef.current) {
+            announcementsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            setAutoScrollSection(null);
+        }
+    }, [content, autoScrollSection]);
 
     const handleUpdate = async (e) => {
         e.preventDefault();
@@ -194,13 +211,16 @@ const AdminPanel = (props) => {
 
     const handleAddItem = (section) => {
         const newItem = section === 'events'
-            ? { id: Date.now(), title: '', date: '', time: '', location: '', description: '', status: 'upcoming' }
-            : { id: Date.now(), title: '', date: '', description: '', color: 'yellow' };
+            ? { id: Date.now(), title: '', date: '', time: '', location: '', description: '', status: 'upcoming', registerLink: '' }
+            : { id: Date.now(), title: '', date: '', description: '', registerLink: '', color: 'yellow' };
 
         setContent(prev => ({
             ...prev,
             [section]: [...prev[section], newItem]
         }));
+
+        // Trigger scroll
+        setAutoScrollSection(section);
     };
 
     const handleRemoveItem = (section, index) => {
@@ -238,7 +258,17 @@ const AdminPanel = (props) => {
                 {/* Header */}
                 <div className="bg-gray-800 text-white p-6 flex justify-between items-center">
                     <h1 className="text-2xl font-bold">Yönetim Paneli</h1>
-                    <button onClick={handleLogout} className="text-red-400 hover:text-red-300 font-medium text-sm">Çıkış Yap</button>
+                    <div className="flex items-center gap-4">
+                        <button
+                            type="button"
+                            onClick={handleUpdate}
+                            disabled={loading}
+                            className={`bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            {loading ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
+                        </button>
+                        <button onClick={handleLogout} className="text-red-400 hover:text-red-300 font-medium text-sm">Çıkış Yap</button>
+                    </div>
                 </div>
 
                 {/* Tabs */}
@@ -450,7 +480,16 @@ const AdminPanel = (props) => {
                             {/* EVENTS TAB */}
                             {activeTab === 'events' && (
                                 <div className="space-y-6">
-                                    <h3 className="text-lg font-bold text-gray-700 border-b pb-2">Etkinlikleri Düzenle</h3>
+                                    <div className="flex justify-between items-center border-b pb-2 mb-4">
+                                        <h3 className="text-lg font-bold text-gray-700">Etkinlikleri Düzenle</h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAddItem('events')}
+                                            className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition"
+                                        >
+                                            + Yeni Etkinlik Ekle
+                                        </button>
+                                    </div>
                                     {content.events.map((event, index) => (
                                         <div key={index} className="border p-4 rounded bg-gray-50 space-y-3 relative">
                                             <div className="flex justify-between items-center mb-2">
@@ -468,6 +507,10 @@ const AdminPanel = (props) => {
                                                     value={event.title} onChange={(e) => handleArrayChange('events', index, 'title', e.target.value)} />
                                                 <input type="text" placeholder="Tarih" className="border rounded p-2 w-full"
                                                     value={event.date} onChange={(e) => handleArrayChange('events', index, 'date', e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <input type="text" placeholder="Kayıt/Başvuru Linki (Örn: https://forms.google.com/...)" className="border rounded p-2 w-full text-sm mb-3"
+                                                    value={event.registerLink || ''} onChange={(e) => handleArrayChange('events', index, 'registerLink', e.target.value)} />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <input type="text" placeholder="Saat" className="border rounded p-2 w-full"
@@ -551,20 +594,23 @@ const AdminPanel = (props) => {
                                             </div>
                                         </div>
                                     ))}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleAddItem('events')}
-                                        className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-500 hover:text-blue-500 rounded font-medium transition"
-                                    >
-                                        + Yeni Etkinlik Ekle
-                                    </button>
+                                    <div ref={eventsEndRef} />
                                 </div>
                             )}
 
                             {/* ANNOUNCEMENTS TAB */}
                             {activeTab === 'announcements' && (
                                 <div className="space-y-6">
-                                    <h3 className="text-lg font-bold text-gray-700 border-b pb-2">Duyuruları Düzenle</h3>
+                                    <div className="flex justify-between items-center border-b pb-2 mb-4">
+                                        <h3 className="text-lg font-bold text-gray-700">Duyuruları Düzenle</h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAddItem('announcements')}
+                                            className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition"
+                                        >
+                                            + Yeni Duyuru Ekle
+                                        </button>
+                                    </div>
                                     {content.announcements.map((ann, index) => (
                                         <div key={index} className="border p-4 rounded bg-gray-50 space-y-3 relative">
                                             <div className="flex justify-between items-center mb-2">
@@ -582,6 +628,10 @@ const AdminPanel = (props) => {
                                                     value={ann.title} onChange={(e) => handleArrayChange('announcements', index, 'title', e.target.value)} />
                                                 <input type="text" placeholder="Tarih" className="border rounded p-2 w-full"
                                                     value={ann.date} onChange={(e) => handleArrayChange('announcements', index, 'date', e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <input type="text" placeholder="Kayıt/Başvuru Linki (Örn: https://forms.google.com/...)" className="border rounded p-2 w-full text-sm"
+                                                    value={ann.registerLink || ''} onChange={(e) => handleArrayChange('announcements', index, 'registerLink', e.target.value)} />
                                             </div>
                                             <textarea placeholder="Açıklama" className="border rounded p-2 w-full" rows="2"
                                                 value={ann.description} onChange={(e) => handleArrayChange('announcements', index, 'description', e.target.value)} ></textarea>
@@ -647,13 +697,7 @@ const AdminPanel = (props) => {
                                             </div>
                                         </div>
                                     ))}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleAddItem('announcements')}
-                                        className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-500 hover:text-blue-500 rounded font-medium transition"
-                                    >
-                                        + Yeni Duyuru Ekle
-                                    </button>
+                                    <div ref={announcementsEndRef} />
                                 </div>
                             )}
 
