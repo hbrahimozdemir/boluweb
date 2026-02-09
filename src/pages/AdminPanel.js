@@ -358,7 +358,17 @@ const AdminPanel = (props) => {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">Arkaplan Görseli</label>
-                                        <input type="file" onChange={(e) => setHeroFile(e.target.files[0])} className="block w-full text-sm text-gray-500" />
+                                        <div className="flex items-center gap-4">
+                                            <label className="cursor-pointer bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full hover:bg-blue-100 transition-colors text-sm">
+                                                Dosya Seç
+                                                <input
+                                                    type="file"
+                                                    onChange={(e) => setHeroFile(e.target.files[0])}
+                                                    className="hidden"
+                                                />
+                                            </label>
+                                            <span className="text-sm text-gray-500 truncate max-w-xs">{heroFile ? heroFile.name : 'Dosya seçilmedi'}</span>
+                                        </div>
                                         {content.hero.imageUrl && (
                                             <div className="mt-4 relative inline-block group h-32 w-auto">
                                                 <img src={content.hero.imageUrl} alt="Preview" className="h-32 w-auto object-cover rounded-lg shadow-md" />
@@ -431,7 +441,17 @@ const AdminPanel = (props) => {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">Hakkımızda Görseli</label>
-                                        <input type="file" onChange={(e) => setAboutFile(e.target.files[0])} className="block w-full text-sm text-gray-500" />
+                                        <div className="flex items-center gap-4">
+                                            <label className="cursor-pointer bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full hover:bg-blue-100 transition-colors text-sm">
+                                                Dosya Seç
+                                                <input
+                                                    type="file"
+                                                    onChange={(e) => setAboutFile(e.target.files[0])}
+                                                    className="hidden"
+                                                />
+                                            </label>
+                                            <span className="text-sm text-gray-500 truncate max-w-xs">{aboutFile ? aboutFile.name : 'Dosya seçilmedi'}</span>
+                                        </div>
                                         {content.about.imageUrl && (
                                             <div className="mt-4 relative inline-block group h-32 w-auto">
                                                 <img src={content.about.imageUrl} alt="Preview" className="h-32 w-auto object-cover rounded-lg shadow-md" />
@@ -535,16 +555,23 @@ const AdminPanel = (props) => {
                                             </div>
                                             <div className="mt-2">
                                                 <label className="text-sm font-medium text-gray-600 block mb-1">Etkinlik Görselleri</label>
-                                                <input
-                                                    type="file"
-                                                    multiple
-                                                    name={`event_images_${index}[]`} // Form submit icin gerekli olmayabilir ama referans
-                                                    onChange={(e) => {
-                                                        const files = Array.from(e.target.files);
-                                                        // e.target.setAttribute('data-files-selected', files.length);
-                                                    }}
-                                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                                />
+                                                <div className="flex items-center gap-4">
+                                                    <label className="cursor-pointer bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full hover:bg-blue-100 transition-colors text-sm">
+                                                        Dosya Seç
+                                                        <input
+                                                            type="file"
+                                                            multiple
+                                                            name={`event_images_${index}[]`}
+                                                            onChange={(e) => {
+                                                                const count = e.target.files.length;
+                                                                const span = document.getElementById(`file-count-event-${index}`);
+                                                                if (span) span.textContent = count > 0 ? `${count} dosya seçildi` : 'Dosya seçilmedi';
+                                                            }}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                    <span id={`file-count-event-${index}`} className="text-sm text-gray-500">Dosya seçilmedi</span>
+                                                </div>
                                                 <div className="flex gap-4 mt-4 overflow-x-auto pb-2">
                                                     {event.images && event.images.map((img, i) => (
                                                         <div key={i} className="relative flex-shrink-0 w-24 h-24 group">
@@ -638,16 +665,23 @@ const AdminPanel = (props) => {
 
                                             <div className="mt-2">
                                                 <label className="text-sm font-medium text-gray-600 block mb-1">Duyuru Görselleri</label>
-                                                <input
-                                                    type="file"
-                                                    multiple
-                                                    name={`announcement_images_${index}[]`}
-                                                    onChange={(e) => {
-                                                        const files = Array.from(e.target.files);
-                                                        // e.target.setAttribute('data-files-selected', files.length);
-                                                    }}
-                                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                                />
+                                                <div className="flex items-center gap-4">
+                                                    <label className="cursor-pointer bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full hover:bg-blue-100 transition-colors text-sm">
+                                                        Dosya Seç
+                                                        <input
+                                                            type="file"
+                                                            multiple
+                                                            name={`announcement_images_${index}[]`}
+                                                            onChange={(e) => {
+                                                                const count = e.target.files.length;
+                                                                const span = document.getElementById(`file-count-ann-${index}`);
+                                                                if (span) span.textContent = count > 0 ? `${count} dosya seçildi` : 'Dosya seçilmedi';
+                                                            }}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                    <span id={`file-count-ann-${index}`} className="text-sm text-gray-500">Dosya seçilmedi</span>
+                                                </div>
                                                 <div className="flex gap-4 mt-4 overflow-x-auto pb-2">
                                                     {ann.images && ann.images.map((img, i) => (
                                                         <div key={i} className="relative flex-shrink-0 w-24 h-24 group">
