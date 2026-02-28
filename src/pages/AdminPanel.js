@@ -277,7 +277,9 @@ const AdminPanel = (props) => {
     const handleAddItem = (section) => {
         const newItem = section === 'events'
             ? { id: Date.now(), title: '', date: '', time: '', location: '', description: '', status: 'upcoming', registerLink: '' }
-            : { id: Date.now(), title: '', date: '', description: '', registerLink: '', color: 'yellow' };
+            : section === 'infoCards'
+                ? { id: Date.now(), title: '', description: '', icon: 'Lightbulb', color: 'gray' }
+                : { id: Date.now(), title: '', date: '', description: '', registerLink: '', color: 'yellow' };
 
         setContent(prev => ({
             ...prev,
@@ -299,18 +301,58 @@ const AdminPanel = (props) => {
         }));
     };
 
-    const handleSwapImage = (section, itemIndex, imgIndex, direction) => {
+    const handleSwapImageDrag = (section, itemIndex, fromIndex, toIndex) => {
         const item = content[section][itemIndex];
         if (!item || !item.images || item.images.length < 2) return;
 
         const newImages = [...item.images];
-        if (direction === 'left' && imgIndex > 0) {
-            [newImages[imgIndex - 1], newImages[imgIndex]] = [newImages[imgIndex], newImages[imgIndex - 1]];
-        } else if (direction === 'right' && imgIndex < newImages.length - 1) {
-            [newImages[imgIndex + 1], newImages[imgIndex]] = [newImages[imgIndex], newImages[imgIndex + 1]];
+        const temp = newImages[fromIndex];
+        newImages.splice(fromIndex, 1);
+        newImages.splice(toIndex, 0, temp);
+        handleArrayChange(section, itemIndex, 'images', newImages);
+    };
+
+    const handleDragStart = (e, section, itemIndex, imgIndex) => {
+        e.dataTransfer.setData("application/json", JSON.stringify({ section, itemIndex, imgIndex }));
+    };
+
+    const handleDrop = (e, dropSection, dropItemIndex, dropImgIndex) => {
+        e.preventDefault();
+        try {
+            const data = JSON.parse(e.dataTransfer.getData("application/json"));
+            if (data.section === dropSection && data.itemIndex === dropItemIndex && data.imgIndex !== dropImgIndex) {
+                handleSwapImageDrag(dropSection, dropItemIndex, data.imgIndex, dropImgIndex);
+            }
+        } catch (err) { }
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
+    const handleDateInput = (section, index, value) => {
+        // Strict DD.MM.YYYY masking logic to prevent e.g. 2999999
+        let clean = value.replace(/[^\d]/g, '');
+        let formatted = '';
+
+        if (clean.length > 0) {
+            let day = clean.substring(0, 2);
+            if (day.length === 2 && parseInt(day) > 31) day = '31';
+            if (day.length === 2 && parseInt(day) === 0) day = '01';
+            formatted += day;
+        }
+        if (clean.length > 2) {
+            let month = clean.substring(2, 4);
+            if (month.length === 2 && parseInt(month) > 12) month = '12';
+            if (month.length === 2 && parseInt(month) === 0) month = '01';
+            formatted += '.' + month;
+        }
+        if (clean.length > 4) {
+            let year = clean.substring(4, 8);
+            formatted += '.' + year;
         }
 
-        handleArrayChange(section, itemIndex, 'images', newImages);
+        handleArrayChange(section, index, 'date', formatted);
     };
 
     const formatDate = (dateString) => {
@@ -352,17 +394,18 @@ const AdminPanel = (props) => {
 
                 {/* Tabs */}
                 <div className="flex border-b overflow-x-auto">
-                    {['hero', 'about', 'events', 'announcements', 'footer', 'history'].map(tab => (
+                    {['hero', 'infoCards', 'about', 'events', 'announcements', 'footer', 'history'].map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`px-6 py-4 font-medium text-sm focus:outline-none capitalize whitespace-nowrap ${activeTab === tab ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50' : 'text-gray-600 hover:bg-gray-50'}`}
                         >
                             {tab === 'hero' ? 'Ana Ekran' :
-                                tab === 'about' ? 'Hakkımızda' :
-                                    tab === 'events' ? 'Etkinlikler' :
-                                        tab === 'announcements' ? 'Duyurular' :
-                                            tab === 'footer' ? 'Alt Bilgi' : 'Geçmiş/Geri Al'}
+                                tab === 'infoCards' ? 'Bilgi Kartları' :
+                                    tab === 'about' ? 'Hakkımızda' :
+                                        tab === 'events' ? 'Etkinlikler' :
+                                            tab === 'announcements' ? 'Duyurular' :
+                                                tab === 'footer' ? 'Alt Bilgi' : 'Geçmiş/Geri Al'}
                         </button>
                     ))}
                 </div>
@@ -559,6 +602,75 @@ const AdminPanel = (props) => {
                                 </div>
                             )}
 
+                            {/* INFO CARDS TAB */}
+                            {activeTab === 'infoCards' && (
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center border-b pb-2 mb-4">
+                                        <h3 className="text-lg font-bold text-gray-700">Bilgi Kartlarını Düzenle</h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAddItem('infoCards')}
+                                            className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition"
+                                        >
+                                            + Yeni Kart Ekle
+                                        </button>
+                                    </div>
+                                    <p className="text-sm text-gray-500 -mt-2 mb-4">Ana sayfadaki yan yana dizili renkli kartları (Misyonumuz vs.) buradan yönetebilirsiniz.</p>
+
+                                    {content.infoCards && content.infoCards.map((card, index) => (
+                                        <div key={index} className="border p-4 rounded bg-gray-50 space-y-3 relative">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <h4 className="font-bold text-sm text-gray-500">Kart #{index + 1}</h4>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveItem('infoCards', index)}
+                                                    className="text-red-500 hover:text-red-700 text-sm font-medium"
+                                                >
+                                                    Sil
+                                                </button>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="text-sm font-medium text-gray-600 block mb-1">Başlık</label>
+                                                    <input type="text" className="border rounded p-2 w-full"
+                                                        value={card.title} onChange={(e) => handleArrayChange('infoCards', index, 'title', e.target.value)} />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="text-sm font-medium text-gray-600 block mb-1">İkon</label>
+                                                        <select className="border rounded p-2 w-full" value={card.icon} onChange={(e) => handleArrayChange('infoCards', index, 'icon', e.target.value)}>
+                                                            <option value="Target">Hedef (Target)</option>
+                                                            <option value="Users">Kullanıcılar (Users)</option>
+                                                            <option value="Lightbulb">Ampul (Lightbulb)</option>
+                                                            <option value="Heart">Kalp (Heart)</option>
+                                                            <option value="Star">Yıldız (Star)</option>
+                                                            <option value="Shield">Kalkan (Shield)</option>
+                                                            <option value="Leaf">Yaprak (Leaf)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-sm font-medium text-gray-600 block mb-1">Renk</label>
+                                                        <select className="border rounded p-2 w-full" value={card.color} onChange={(e) => handleArrayChange('infoCards', index, 'color', e.target.value)}>
+                                                            <option value="yellow">Sarı (Yellow)</option>
+                                                            <option value="green">Yeşil (Green)</option>
+                                                            <option value="gray">Gri/Beyaz (Gray)</option>
+                                                            <option value="pink">Pembe (Pink)</option>
+                                                            <option value="blue">Mavi (Blue)</option>
+                                                            <option value="purple">Mor (Purple)</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium text-gray-600 block mb-1">Kısa Açıklama</label>
+                                                <textarea className="border rounded p-2 w-full" rows="2"
+                                                    value={card.description} onChange={(e) => handleArrayChange('infoCards', index, 'description', e.target.value)} ></textarea>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                             {/* ABOUT TAB */}
                             {activeTab === 'about' && (
                                 <div className="space-y-4">
@@ -670,8 +782,8 @@ const AdminPanel = (props) => {
                                             <div className="grid grid-cols-2 gap-4">
                                                 <input type="text" placeholder="Başlık" className="border rounded p-2 w-full"
                                                     value={event.title} onChange={(e) => handleArrayChange('events', index, 'title', e.target.value)} />
-                                                <input type="text" placeholder="Tarih" className="border rounded p-2 w-full"
-                                                    value={event.date} onChange={(e) => handleArrayChange('events', index, 'date', e.target.value)} />
+                                                <input type="text" placeholder="GG.AA.YYYY (Tarih)" className="border rounded p-2 w-full"
+                                                    value={event.date} onChange={(e) => handleDateInput('events', index, e.target.value)} maxLength="10" />
                                             </div>
                                             <div>
                                                 <input type="text" placeholder="Kayıt/Başvuru Linki (Örn: https://forms.google.com/...)" className="border rounded p-2 w-full text-sm mb-3"
@@ -719,8 +831,15 @@ const AdminPanel = (props) => {
                                                 </div>
                                                 <div className="flex gap-4 mt-4 overflow-x-auto pb-2">
                                                     {event.images && event.images.map((img, i) => (
-                                                        <div key={i} className="relative flex-shrink-0 w-24 h-24 group">
-                                                            <img src={img} alt={`Event ${index} Img ${i}`} className="w-full h-full object-cover rounded-lg border shadow-sm" />
+                                                        <div
+                                                            key={i}
+                                                            className="relative flex-shrink-0 w-24 h-24 group cursor-grab active:cursor-grabbing"
+                                                            draggable
+                                                            onDragStart={(e) => handleDragStart(e, 'events', index, i)}
+                                                            onDrop={(e) => handleDrop(e, 'events', index, i)}
+                                                            onDragOver={handleDragOver}
+                                                        >
+                                                            <img src={img} alt={`Event ${index} Img ${i}`} className="w-full h-full object-cover rounded-lg border shadow-sm pointer-events-none" />
 
                                                             {deleteConfirm && deleteConfirm.section === 'events' && deleteConfirm.itemIndex === index && deleteConfirm.imgIndex === i ? (
                                                                 <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg animate-fade-in text-white p-1">
@@ -734,7 +853,7 @@ const AdminPanel = (props) => {
                                                                                 handleArrayChange('events', index, 'images', newImages);
                                                                                 setDeleteConfirm(null);
                                                                             }}
-                                                                            className="bg-red-500 hover:bg-red-600 p-1 rounded-full text-white transition-colors"
+                                                                            className="bg-red-500 hover:bg-red-600 p-1 rounded-full text-white transition-colors pointer-events-auto"
                                                                             title="Evet"
                                                                         >
                                                                             <Check size={12} />
@@ -742,7 +861,7 @@ const AdminPanel = (props) => {
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => setDeleteConfirm(null)}
-                                                                            className="bg-gray-500 hover:bg-gray-600 p-1 rounded-full text-white transition-colors"
+                                                                            className="bg-gray-500 hover:bg-gray-600 p-1 rounded-full text-white transition-colors pointer-events-auto"
                                                                             title="Hayır"
                                                                         >
                                                                             <X size={12} />
@@ -753,34 +872,16 @@ const AdminPanel = (props) => {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setDeleteConfirm({ section: 'events', itemIndex: index, imgIndex: i })}
-                                                                    className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-all opacity-80 hover:opacity-100"
+                                                                    className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-all opacity-80 hover:opacity-100 pointer-events-auto"
                                                                     title="Görseli Sil"
                                                                 >
                                                                     <Trash2 size={14} />
                                                                 </button>
                                                             )}
-
-                                                            {/* Swap Buttons */}
-                                                            {event.images.length > 1 && (
-                                                                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleSwapImage('events', index, i, 'left')}
-                                                                        disabled={i === 0}
-                                                                        className={`p-1 bg-black/60 text-white rounded-full pointer-events-auto ${i === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/80'}`}
-                                                                    >
-                                                                        <span className="text-xs leading-none">←</span>
-                                                                    </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleSwapImage('events', index, i, 'right')}
-                                                                        disabled={i === event.images.length - 1}
-                                                                        className={`p-1 bg-black/60 text-white rounded-full pointer-events-auto ${i === event.images.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/80'}`}
-                                                                    >
-                                                                        <span className="text-xs leading-none">→</span>
-                                                                    </button>
-                                                                </div>
-                                                            )}
+                                                            {/* Drop Hint Overlay */}
+                                                            <div className="absolute inset-0 bg-blue-500/20 rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity flex items-end justify-center pb-2">
+                                                                <span className="text-[10px] font-bold text-white bg-black/50 px-2 py-0.5 rounded shadow-sm">Sürükle</span>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -830,8 +931,8 @@ const AdminPanel = (props) => {
                                             <div className="grid grid-cols-2 gap-4">
                                                 <input type="text" placeholder="Başlık" className="border rounded p-2 w-full"
                                                     value={ann.title} onChange={(e) => handleArrayChange('announcements', index, 'title', e.target.value)} />
-                                                <input type="text" placeholder="Tarih" className="border rounded p-2 w-full"
-                                                    value={ann.date} onChange={(e) => handleArrayChange('announcements', index, 'date', e.target.value)} />
+                                                <input type="text" placeholder="GG.AA.YYYY (Tarih)" className="border rounded p-2 w-full"
+                                                    value={ann.date} onChange={(e) => handleDateInput('announcements', index, e.target.value)} maxLength="10" />
                                             </div>
                                             <div>
                                                 <input type="text" placeholder="Kayıt/Başvuru Linki (Örn: https://forms.google.com/...)" className="border rounded p-2 w-full text-sm"
@@ -861,8 +962,15 @@ const AdminPanel = (props) => {
                                                 </div>
                                                 <div className="flex gap-4 mt-4 overflow-x-auto pb-2">
                                                     {ann.images && ann.images.map((img, i) => (
-                                                        <div key={i} className="relative flex-shrink-0 w-24 h-24 group">
-                                                            <img src={img} alt={`Ann ${index} Img ${i}`} className="w-full h-full object-cover rounded-lg border shadow-sm" />
+                                                        <div
+                                                            key={i}
+                                                            className="relative flex-shrink-0 w-24 h-24 group cursor-grab active:cursor-grabbing"
+                                                            draggable
+                                                            onDragStart={(e) => handleDragStart(e, 'announcements', index, i)}
+                                                            onDrop={(e) => handleDrop(e, 'announcements', index, i)}
+                                                            onDragOver={handleDragOver}
+                                                        >
+                                                            <img src={img} alt={`Ann ${index} Img ${i}`} className="w-full h-full object-cover rounded-lg border shadow-sm pointer-events-none" />
 
                                                             {deleteConfirm && deleteConfirm.section === 'announcements' && deleteConfirm.itemIndex === index && deleteConfirm.imgIndex === i ? (
                                                                 <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg animate-fade-in text-white p-1">
@@ -876,7 +984,7 @@ const AdminPanel = (props) => {
                                                                                 handleArrayChange('announcements', index, 'images', newImages);
                                                                                 setDeleteConfirm(null);
                                                                             }}
-                                                                            className="bg-red-500 hover:bg-red-600 p-1 rounded-full text-white transition-colors"
+                                                                            className="bg-red-500 hover:bg-red-600 p-1 rounded-full text-white transition-colors pointer-events-auto"
                                                                             title="Evet"
                                                                         >
                                                                             <Check size={12} />
@@ -884,7 +992,7 @@ const AdminPanel = (props) => {
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => setDeleteConfirm(null)}
-                                                                            className="bg-gray-500 hover:bg-gray-600 p-1 rounded-full text-white transition-colors"
+                                                                            className="bg-gray-500 hover:bg-gray-600 p-1 rounded-full text-white transition-colors pointer-events-auto"
                                                                             title="Hayır"
                                                                         >
                                                                             <X size={12} />
@@ -895,34 +1003,16 @@ const AdminPanel = (props) => {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setDeleteConfirm({ section: 'announcements', itemIndex: index, imgIndex: i })}
-                                                                    className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-all opacity-80 hover:opacity-100"
+                                                                    className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-all opacity-80 hover:opacity-100 pointer-events-auto"
                                                                     title="Görseli Sil"
                                                                 >
                                                                     <Trash2 size={14} />
                                                                 </button>
                                                             )}
-
-                                                            {/* Swap Buttons */}
-                                                            {ann.images.length > 1 && (
-                                                                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleSwapImage('announcements', index, i, 'left')}
-                                                                        disabled={i === 0}
-                                                                        className={`p-1 bg-black/60 text-white rounded-full pointer-events-auto ${i === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/80'}`}
-                                                                    >
-                                                                        <span className="text-xs leading-none">←</span>
-                                                                    </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleSwapImage('announcements', index, i, 'right')}
-                                                                        disabled={i === ann.images.length - 1}
-                                                                        className={`p-1 bg-black/60 text-white rounded-full pointer-events-auto ${i === ann.images.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/80'}`}
-                                                                    >
-                                                                        <span className="text-xs leading-none">→</span>
-                                                                    </button>
-                                                                </div>
-                                                            )}
+                                                            {/* Drop Hint Overlay */}
+                                                            <div className="absolute inset-0 bg-blue-500/20 rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity flex items-end justify-center pb-2">
+                                                                <span className="text-[10px] font-bold text-white bg-black/50 px-2 py-0.5 rounded shadow-sm">Sürükle</span>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>

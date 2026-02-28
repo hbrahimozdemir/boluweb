@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Calendar, Clock, MapPin, ChevronLeft, ChevronRight,
     Megaphone, Mail, Phone, Map, Instagram, Twitter, Linkedin, Facebook,
-    ArrowRight, X, Menu, Target, Users, Lightbulb, Heart
+    ArrowRight, X, Menu, Target, Users, Lightbulb, Heart, Star, Shield, Leaf
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -27,32 +27,53 @@ const Home = () => {
 
     const { hero, about, events: rawEvents, announcements: rawAnnouncements, footer } = content;
 
-    // Helper to parse Turkish date string to Date object
+    // Helper to parse date strings to Date object (Supporting DD.MM.YYYY and YYYY-MM-DD or standard JS)
     const parseDate = (dateStr) => {
         if (!dateStr) return new Date(0);
 
-        const months = {
-            'Ocak': 0, 'Şubat': 1, 'Mart': 2, 'Nisan': 3, 'Mayıs': 4, 'Haziran': 5,
-            'Temmuz': 6, 'Ağustos': 7, 'Eylül': 8, 'Ekim': 9, 'Kasım': 10, 'Aralık': 11
-        };
-
         try {
-            const parts = dateStr.split(' ');
-            if (parts.length < 3) return new Date(dateStr); // Try standard parse if not formatted
-
-            const day = parseInt(parts[0]);
-            const month = months[parts[1]] !== undefined ? months[parts[1]] : 0;
-            const year = parseInt(parts[2]);
-
-            return new Date(year, month, day);
+            // Check DD.MM.YYYY format
+            if (dateStr.includes('.')) {
+                const parts = dateStr.split('.');
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10) - 1;
+                    const year = parseInt(parts[2], 10);
+                    return new Date(year, month, day);
+                }
+            }
+            // fallback
+            return new Date(dateStr);
         } catch (e) {
             return new Date(0);
+        }
+    };
+
+    // Helper to format Date strings to Turkish legible strings
+    const formatDisplayDate = (dateStr) => {
+        if (!dateStr) return '';
+        try {
+            const dateObj = parseDate(dateStr);
+            // Verify date object is valid
+            if (isNaN(dateObj.getTime()) || dateObj.getTime() === 0) return dateStr;
+            return new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(dateObj);
+        } catch (e) {
+            return dateStr;
         }
     };
 
     // Sort events and announcements by date (Newest first)
     const events = rawEvents ? [...rawEvents].sort((a, b) => parseDate(b.date) - parseDate(a.date)) : [];
     const announcements = rawAnnouncements ? [...rawAnnouncements].sort((a, b) => parseDate(b.date) - parseDate(a.date)) : [];
+
+    // Helper to ensure URLs are absolute
+    const getAbsoluteUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return url;
+        }
+        return `https://${url}`;
+    };
 
     return (
         <div className="font-sans text-gray-900 bg-gray-50">
@@ -119,24 +140,25 @@ const Home = () => {
                         <div className="w-full lg:w-8/12 px-4 ml-auto mr-auto text-center">
                             {/* Logos Row - Main logo centered with partner logos on sides */}
                             <div className="flex items-center justify-center gap-4 md:gap-8 mb-8 flex-wrap">
-                                {/* Static / Default Logos (Always visible) */}
-                                <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
-                                    <img src="/tubitak.png" alt="TÜBİTAK Logo" className="max-w-full max-h-full object-contain" />
-                                </div>
-                                <div className="flex items-center justify-center w-32 h-32 md:w-40 md:h-40 bg-white rounded-full p-2 shadow-xl z-10 transform hover:scale-110 transition-transform duration-300 border border-gray-100">
-                                    <img src="/logo.png" alt="BAİBÜ Kampüs Kooperatifi" className="max-w-full max-h-full object-contain" />
-                                </div>
-                                <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
-                                    <img src="/baibu-logo.png" alt="BAİBÜ Logo" className="max-w-full max-h-full object-contain" />
-                                </div>
-
-                                {/* Dynamic Logos (Partner / Sponsor logos added from Admin Panel) */}
-                                {content.logos && content.logos.length > 0 && (
+                                {content.logos && content.logos.length > 0 ? (
                                     content.logos.map((logo, index) => (
-                                        <div key={index} className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+                                        <div key={index} className={`flex items-center justify-center bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100 ${index === 1 ? 'w-32 h-32 md:w-40 md:h-40 z-10 shadow-xl hover:scale-110' : 'w-24 h-24 md:w-32 md:h-32'}`}>
                                             <img src={logo} alt={`Partner ${index}`} className="max-w-full max-h-full object-contain" />
                                         </div>
                                     ))
+                                ) : (
+                                    // Fallback to static logos if no dynamic logos are set
+                                    <>
+                                        <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+                                            <img src="/tubitak.png" alt="TÜBİTAK Logo" className="max-w-full max-h-full object-contain" />
+                                        </div>
+                                        <div className="flex items-center justify-center w-32 h-32 md:w-40 md:h-40 bg-white rounded-full p-2 shadow-xl z-10 transform hover:scale-110 transition-transform duration-300 border border-gray-100">
+                                            <img src="/logo.png" alt="BAİBÜ Kampüs Kooperatifi" className="max-w-full max-h-full object-contain" />
+                                        </div>
+                                        <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+                                            <img src="/baibu-logo.png" alt="BAİBÜ Logo" className="max-w-full max-h-full object-contain" />
+                                        </div>
+                                    </>
                                 )}
                             </div>
                             <h1 className="text-yellow-700 font-bold text-5xl mb-6 drop-shadow-sm">
@@ -154,50 +176,38 @@ const Home = () => {
             {/* Info Cards Section */}
             <div className="relative -mt-24 pb-16 z-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {/* Misyonumuz - Yellow */}
-                        <div className="bg-yellow-100/90 backdrop-blur rounded-xl p-6 shadow-xl border border-yellow-200 hover:transform hover:-translate-y-1 transition duration-300">
-                            <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
-                                <Target size={24} />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Misyonumuz</h3>
-                            <p className="text-gray-700 text-sm leading-relaxed">
-                                Deri endüstrisi atıklarını değerli, yenilikçi ürünlere dönüştürerek, döngüsel sürdürülebilirliği ve döngüsel ekonomi uygulamalarını teşvik etmek.
-                            </p>
-                        </div>
+                    <div className="flex overflow-x-auto gap-6 pb-6 pt-2 snap-x snap-mandatory hide-scroll-bar px-1">
+                        {content.infoCards && content.infoCards.map((card, index) => {
+                            // Map string icon name to Lucide component
+                            const IconComponent = {
+                                Target, Users, Lightbulb, Heart, Star, Shield, Leaf
+                            }[card.icon] || Lightbulb;
 
-                        {/* Öğrenci Liderliğinde Girişim - Green/Cyan */}
-                        <div className="bg-emerald-100/90 backdrop-blur rounded-xl p-6 shadow-xl border border-emerald-200 hover:transform hover:-translate-y-1 transition duration-300">
-                            <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
-                                <Users size={24} />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Öğrenci Liderliğinde Girişim</h3>
-                            <p className="text-gray-700 text-sm leading-relaxed">
-                                Sürdürülebilirliğe katkı sunan sıfır atık ve döngüsel ekonomi ilkeleriyle öğrenciler tarafından yürütülen bir girişim.
-                            </p>
-                        </div>
+                            // Map colors safely for Tailwind
+                            const colorStyles = {
+                                yellow: { bg: 'bg-yellow-100/90', border: 'border-yellow-200', iconBg: 'bg-yellow-500' },
+                                green: { bg: 'bg-emerald-100/90', border: 'border-emerald-200', iconBg: 'bg-emerald-500' },
+                                gray: { bg: 'bg-white/90', border: 'border-gray-200', iconBg: 'bg-gray-700' },
+                                pink: { bg: 'bg-pink-100/90', border: 'border-pink-200', iconBg: 'bg-pink-500' },
+                                blue: { bg: 'bg-blue-100/90', border: 'border-blue-200', iconBg: 'bg-blue-500' },
+                                purple: { bg: 'bg-purple-100/90', border: 'border-purple-200', iconBg: 'bg-purple-500' }
+                            }[card.color] || { bg: 'bg-gray-100/90', border: 'border-gray-200', iconBg: 'bg-gray-500' };
 
-                        {/* İnovasyon Odaklılık - White/Gray */}
-                        <div className="bg-white/90 backdrop-blur rounded-xl p-6 shadow-xl border border-gray-200 hover:transform hover:-translate-y-1 transition duration-300">
-                            <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
-                                <Lightbulb size={24} />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">İnovasyon Odaklılık</h3>
-                            <p className="text-gray-700 text-sm leading-relaxed">
-                                Malzeme kullanımını en üst düzeye çıkarmak ve yüksek kaliteli sürdürülebilir ürünler için son teknoloji teknikler ve tasarımlar geliştirmek.
-                            </p>
-                        </div>
+                            // Calculate dynamic width sizing class depending on item count. If <=4 items, stretch gracefully, otherwise set min-width
+                            const widthClass = content.infoCards.length <= 4 ? "min-w-[280px] flex-1" : "min-w-[280px] md:min-w-[300px] lg:min-w-[320px] max-w-sm shrink-0";
 
-                        {/* Toplumsal Etki - Pink */}
-                        <div className="bg-pink-100/90 backdrop-blur rounded-xl p-6 shadow-xl border border-pink-200 hover:transform hover:-translate-y-1 transition duration-300">
-                            <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
-                                <Heart size={24} />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Toplumsal Etki</h3>
-                            <p className="text-gray-700 text-sm leading-relaxed">
-                                Sürdürülebilir uygulamalar hakkında farkındalık oluştururken, ekonomik fırsatlar yaratmak ve çevresel ayak izini azaltmak.
-                            </p>
-                        </div>
+                            return (
+                                <div key={card.id || index} className={`snap-center ${widthClass} ${colorStyles.bg} backdrop-blur rounded-xl p-6 shadow-xl border ${colorStyles.border} hover:transform hover:-translate-y-1 transition duration-300`}>
+                                    <div className={`w-12 h-12 ${colorStyles.iconBg} rounded-full flex items-center justify-center text-white mb-4 shadow-lg`}>
+                                        <IconComponent size={24} />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-3">{card.title}</h3>
+                                    <p className="text-gray-700 text-sm leading-relaxed">
+                                        {card.description}
+                                    </p>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -293,7 +303,7 @@ const Home = () => {
                                 <div className="p-6">
                                     <h3 className="text-lg font-bold text-gray-800 mb-4 line-clamp-1">{e.title}</h3>
                                     <div className="space-y-2 mb-4 text-sm text-gray-600">
-                                        <div className="flex items-center"><Calendar size={16} className="mr-2 text-yellow-600" /><span>{e.date}</span></div>
+                                        <div className="flex items-center"><Calendar size={16} className="mr-2 text-yellow-600" /><span>{formatDisplayDate(e.date)}</span></div>
                                         <div className="flex items-center"><Clock size={16} className="mr-2 text-yellow-600" /><span>{e.time}</span></div>
                                         <div className="flex items-center"><MapPin size={16} className="mr-2 text-yellow-600" /><span>{e.location}</span></div>
                                     </div>
@@ -334,7 +344,7 @@ const Home = () => {
                                     <div className="flex-1">
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="text-xl font-bold text-gray-800">{e.title}</h3>
-                                            <span className="text-sm text-gray-600">{e.date}</span>
+                                            <span className="text-sm text-gray-600">{formatDisplayDate(e.date)}</span>
                                         </div>
                                         <p className="text-gray-700 leading-relaxed line-clamp-3">{e.description}</p>
 
@@ -404,22 +414,22 @@ const Home = () => {
                             <h3 className="font-bold text-lg mb-4 text-yellow-400">Bizi Takip Edin</h3>
                             <div className="flex space-x-4">
                                 {footer.instagram && (
-                                    <a href={footer.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
+                                    <a href={getAbsoluteUrl(footer.instagram)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
                                         <Instagram size={20} />
                                     </a>
                                 )}
                                 {footer.twitter && (
-                                    <a href={footer.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
+                                    <a href={getAbsoluteUrl(footer.twitter)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
                                         <Twitter size={20} />
                                     </a>
                                 )}
                                 {footer.linkedin && (
-                                    <a href={footer.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
+                                    <a href={getAbsoluteUrl(footer.linkedin)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
                                         <Linkedin size={20} />
                                     </a>
                                 )}
                                 {footer.facebook && (
-                                    <a href={footer.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
+                                    <a href={getAbsoluteUrl(footer.facebook)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
                                         <Facebook size={20} />
                                     </a>
                                 )}
@@ -468,7 +478,7 @@ const Home = () => {
                             <div className="p-8">
                                 <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedEvent.title}</h2>
                                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6 border-b border-gray-100 pb-6">
-                                    <div className="flex items-center"><Calendar size={18} className="mr-2 text-green-600" /><span className="font-medium">{selectedEvent.date}</span></div>
+                                    <div className="flex items-center"><Calendar size={18} className="mr-2 text-green-600" /><span className="font-medium">{formatDisplayDate(selectedEvent.date)}</span></div>
                                     <div className="flex items-center"><Clock size={18} className="mr-2 text-green-600" /><span className="font-medium">{selectedEvent.time}</span></div>
                                     <div className="flex items-center"><MapPin size={18} className="mr-2 text-green-600" /><span className="font-medium">{selectedEvent.location}</span></div>
                                 </div>
@@ -505,7 +515,7 @@ const Home = () => {
                                     </div>
                                     <div>
                                         <h2 className="text-xl font-bold text-gray-900">{selectedAnnouncement.title}</h2>
-                                        <p className="text-sm text-gray-600">{selectedAnnouncement.date}</p>
+                                        <p className="text-sm text-gray-600">{formatDisplayDate(selectedAnnouncement.date)}</p>
                                     </div>
                                 </div>
                                 <button
@@ -540,7 +550,7 @@ const Home = () => {
                                     {selectedAnnouncement.link && (
                                         <div className="flex justify-center mt-8">
                                             <a
-                                                href={selectedAnnouncement.link}
+                                                href={getAbsoluteUrl(selectedAnnouncement.link)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-600 to-green-600 text-white font-semibold rounded-xl hover:shadow-lg transition transform hover:-translate-y-0.5"

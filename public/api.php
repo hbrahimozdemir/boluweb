@@ -35,7 +35,7 @@ function sendError($message, $code = 500) {
 
 try {
     // Resim yukleme klasoru
-    $uploadDir = __DIR__ . '/public/uploads/';
+    $uploadDir = 'uploads/';
     $uploadUrl = 'uploads/';
     if (!file_exists($uploadDir)) {
         if (!mkdir($uploadDir, 0777, true)) {
@@ -48,8 +48,8 @@ try {
     // Geri alma (Restore) islemi
     if (isset($_GET['action']) && $_GET['action'] === 'restore') {
         $version = $_GET['version'] ?? '';
-        $backupDir = __DIR__ . '/public/backups/';
-        $contentPath = __DIR__ . '/public/content.json';
+        $backupDir = 'backups/';
+        $contentPath = 'content.json';
         if ($version && file_exists($backupDir . $version)) {
             if (copy($backupDir . $version, $contentPath)) {
                 sendJson(['success' => true, 'message' => 'Sistem geri yuklendi: ' . $version]);
@@ -64,7 +64,7 @@ try {
     // Yedek silme islemi
     if (isset($_GET['action']) && $_GET['action'] === 'delete_backup') {
         $file = $_GET['file'] ?? '';
-        $backupDir = __DIR__ . '/public/backups/';
+        $backupDir = 'backups/';
         
         // Guvenlik kontrolu: Sadece dosya adi olmali, yol icermemeli ve json olmali
         if ($file && strpos($file, '/') === false && strpos($file, 'content_') === 0 && strpos($file, '.json') !== false && file_exists($backupDir . $file)) {
@@ -80,7 +80,7 @@ try {
 
     // Yedekleri listeleme
     if (isset($_GET['action']) && $_GET['action'] === 'list_backups') {
-        $backupDir = __DIR__ . '/public/backups';
+        $backupDir = 'backups';
         
         $list = [];
         
@@ -128,7 +128,7 @@ try {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Mevcut content.json'i oku
-        $contentPath = __DIR__ . '/public/content.json';
+        $contentPath = 'content.json';
         if (file_exists($contentPath)) {
             $currentContentData = json_decode(file_get_contents($contentPath), true);
         } else {
@@ -146,7 +146,7 @@ try {
         }
         
         // YEDEKLEME: Degisiklik yapmadan once mevcut hali yedekle
-        $backupDir = __DIR__ . '/public/backups';
+        $backupDir = 'backups';
         if (!file_exists($backupDir)) {
             mkdir($backupDir, 0777, true);
         }
