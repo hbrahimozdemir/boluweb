@@ -119,6 +119,7 @@ const Home = () => {
                         <div className="w-full lg:w-8/12 px-4 ml-auto mr-auto text-center">
                             {/* Logos Row - Main logo centered with partner logos on sides */}
                             <div className="flex items-center justify-center gap-4 md:gap-8 mb-8 flex-wrap">
+                                {/* Static / Default Logos (Always visible) */}
                                 <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
                                     <img src="/tubitak.png" alt="TÜBİTAK Logo" className="max-w-full max-h-full object-contain" />
                                 </div>
@@ -128,6 +129,15 @@ const Home = () => {
                                 <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
                                     <img src="/baibu-logo.png" alt="BAİBÜ Logo" className="max-w-full max-h-full object-contain" />
                                 </div>
+
+                                {/* Dynamic Logos (Partner / Sponsor logos added from Admin Panel) */}
+                                {content.logos && content.logos.length > 0 && (
+                                    content.logos.map((logo, index) => (
+                                        <div key={index} className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
+                                            <img src={logo} alt={`Partner ${index}`} className="max-w-full max-h-full object-contain" />
+                                        </div>
+                                    ))
+                                )}
                             </div>
                             <h1 className="text-yellow-700 font-bold text-5xl mb-6 drop-shadow-sm">
                                 {hero.title && hero.title.split('Hakkında')[0]} <span className="text-emerald-600">Hakkında</span>
@@ -393,10 +403,26 @@ const Home = () => {
                         <div id="contact-social">
                             <h3 className="font-bold text-lg mb-4 text-yellow-400">Bizi Takip Edin</h3>
                             <div className="flex space-x-4">
-                                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition"><Instagram size={20} /></a>
-                                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition"><Twitter size={20} /></a>
-                                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition"><Linkedin size={20} /></a>
-                                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition"><Facebook size={20} /></a>
+                                {footer.instagram && (
+                                    <a href={footer.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
+                                        <Instagram size={20} />
+                                    </a>
+                                )}
+                                {footer.twitter && (
+                                    <a href={footer.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
+                                        <Twitter size={20} />
+                                    </a>
+                                )}
+                                {footer.linkedin && (
+                                    <a href={footer.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
+                                        <Linkedin size={20} />
+                                    </a>
+                                )}
+                                {footer.facebook && (
+                                    <a href={footer.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-yellow-600 transition">
+                                        <Facebook size={20} />
+                                    </a>
+                                )}
                             </div>
                         </div>
                     </div>

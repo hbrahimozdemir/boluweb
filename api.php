@@ -35,7 +35,8 @@ function sendError($message, $code = 500) {
 
 try {
     // Resim yukleme klasoru
-    $uploadDir = 'uploads/';
+    $uploadDir = __DIR__ . '/public/uploads/';
+    $uploadUrl = 'uploads/';
     if (!file_exists($uploadDir)) {
         if (!mkdir($uploadDir, 0777, true)) {
             throw new Exception("Upload klasoru olusturulamadi.");
@@ -47,8 +48,10 @@ try {
     // Geri alma (Restore) islemi
     if (isset($_GET['action']) && $_GET['action'] === 'restore') {
         $version = $_GET['version'] ?? '';
-        if ($version && file_exists("backups/$version")) {
-            if (copy("backups/$version", 'content.json')) {
+        $backupDir = __DIR__ . '/public/backups/';
+        $contentPath = __DIR__ . '/public/content.json';
+        if ($version && file_exists($backupDir . $version)) {
+            if (copy($backupDir . $version, $contentPath)) {
                 sendJson(['success' => true, 'message' => 'Sistem geri yuklendi: ' . $version]);
             } else {
                 sendError('Geri yukleme basarisiz');
@@ -61,7 +64,7 @@ try {
     // Yedek silme islemi
     if (isset($_GET['action']) && $_GET['action'] === 'delete_backup') {
         $file = $_GET['file'] ?? '';
-        $backupDir = __DIR__ . '/backups/';
+        $backupDir = __DIR__ . '/public/backups/';
         
         // Guvenlik kontrolu: Sadece dosya adi olmali, yol icermemeli ve json olmali
         if ($file && strpos($file, '/') === false && strpos($file, 'content_') === 0 && strpos($file, '.json') !== false && file_exists($backupDir . $file)) {
@@ -77,7 +80,7 @@ try {
 
     // Yedekleri listeleme
     if (isset($_GET['action']) && $_GET['action'] === 'list_backups') {
-        $backupDir = __DIR__ . '/backups';
+        $backupDir = __DIR__ . '/public/backups';
         
         $list = [];
         
@@ -125,7 +128,7 @@ try {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Mevcut content.json'i oku
-        $contentPath = 'content.json';
+        $contentPath = __DIR__ . '/public/content.json';
         if (file_exists($contentPath)) {
             $currentContentData = json_decode(file_get_contents($contentPath), true);
         } else {
@@ -143,10 +146,11 @@ try {
         }
         
         // YEDEKLEME: Degisiklik yapmadan once mevcut hali yedekle
-        if (!file_exists('backups')) {
-            mkdir('backups', 0777, true);
+        $backupDir = __DIR__ . '/public/backups';
+        if (!file_exists($backupDir)) {
+            mkdir($backupDir, 0777, true);
         }
-        $backupFileName = 'backups/content_' . date('Y-m-d_H-i-s') . '.json';
+        $backupFileName = $backupDir . '/content_' . date('Y-m-d_H-i-s') . '.json';
         if (file_exists($contentPath)) {
             copy($contentPath, $backupFileName);
         }
@@ -173,7 +177,7 @@ try {
             if (isset($_FILES['hero_image']) && $_FILES['hero_image']['error'] === UPLOAD_ERR_OK) {
                 $fileName = time() . '_hero_' . basename($_FILES['hero_image']['name']);
                 if(move_uploaded_file($_FILES['hero_image']['tmp_name'], $uploadDir . $fileName)) {
-                    $newData['hero']['imageUrl'] = $uploadDir . $fileName;
+                    $newData['hero']['imageUrl'] = $uploadUrl . $fileName;
                 }
             } 
 
@@ -181,7 +185,7 @@ try {
             if (isset($_FILES['about_image']) && $_FILES['about_image']['error'] === UPLOAD_ERR_OK) {
                 $fileName = time() . '_about_' . basename($_FILES['about_image']['name']);
                 if(move_uploaded_file($_FILES['about_image']['tmp_name'], $uploadDir . $fileName)) {
-                    $newData['about']['imageUrl'] = $uploadDir . $fileName;
+                    $newData['about']['imageUrl'] = $uploadUrl . $fileName;
                 }
             }
             
@@ -208,7 +212,7 @@ try {
                                     
                                     $newFileName = time() . '_event_' . $index . '_' . basename($name);
                                     if (move_uploaded_file($tmpName, $uploadDir . $newFileName)) {
-                                        $event['images'][] = $uploadDir . $newFileName;
+                                        $event['images'][] = $uploadUrl . $newFileName;
                                     }
                                 }
                             }
@@ -237,7 +241,7 @@ try {
                                     
                                     $newFileName = time() . '_ann_' . $index . '_' . basename($name);
                                     if (move_uploaded_file($tmpName, $uploadDir . $newFileName)) {
-                                        $announcement['images'][] = $uploadDir . $newFileName;
+                                        $announcement['images'][] = $uploadUrl . $newFileName;
                                     }
                                 }
                             }
@@ -246,8 +250,29 @@ try {
                 }
             }
 
+            // --- 5. Logo Gorselleri ---
+            if (!isset($newData['logos'])) {
+                $newData['logos'] = [];
+            }
+            if (isset($_FILES['logo_images'])) {
+                $files = $_FILES['logo_images'];
+                if (is_array($files['name'])) {
+                    for ($i = 0; $i < count($files['name']); $i++) {
+                        if ($files['error'][$i] === UPLOAD_ERR_OK) {
+                            $name = $files['name'][$i];
+                            $tmpName = $files['tmp_name'][$i];
+                            
+                            $newFileName = time() . '_logo_' . basename($name);
+                            if (move_uploaded_file($tmpName, $uploadDir . $newFileName)) {
+                                $newData['logos'][] = $uploadUrl . $newFileName;
+                            }
+                        }
+                    }
+                }
+            }
+
             // JSON dosyasini guncelle
-            if(file_put_contents('content.json', json_encode($newData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+            if(file_put_contents($contentPath, json_encode($newData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
                 sendJson([
                     'success' => true, 
                     'message' => 'Guncelleme basarili!', 

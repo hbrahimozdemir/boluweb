@@ -1,0 +1,28 @@
+﻿
+> kampuskoop@0.1.0 start
+> react-scripts start
+
+node.exe : (node:18920) [DEP01
+76] DeprecationWarning: fs.F_O
+K is deprecated, use fs.consta
+nts.F_OK instead
+At line:1 char:1
++ & "C:\Program Files\nodejs/n
+ode.exe" "C:\Program Files\nod
+ejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo          : 
+    NotSpecified: ((node:189  
+  20) [D...ts.F_OK instead:   
+ String) [], RemoteExcepti    
+on
+    + FullyQualifiedErrorId : 
+    NativeCommandError
+ 
+(Use `node --trace-deprecation
+ ...` to show where the warnin
+g was created)
+Invalid options object. Dev Server has been initialized using an options object that does not match the API schema.
+ - options.allowedHosts[0] should be a non-empty string.

@@ -9,7 +9,6 @@ const AdminPanel = (props) => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
-    // Aktif sekme: 'hero', 'about', 'events', 'announcements', 'footer', 'history'
     const [activeTab, setActiveTab] = useState('hero');
 
     // Geri alma (History) verileri
@@ -18,6 +17,8 @@ const AdminPanel = (props) => {
     // Dosya referansları
     const [heroFile, setHeroFile] = useState(null);
     const [aboutFile, setAboutFile] = useState(null);
+    // Logolar için
+    const [logoFiles, setLogoFiles] = useState([]);
 
     const [deleteConfirm, setDeleteConfirm] = useState(null); // { section, itemIndex, imgIndex }
 
@@ -132,7 +133,71 @@ const AdminPanel = (props) => {
                 setContent(result.data);
                 setHeroFile(null);
                 setAboutFile(null);
+                setLogoFiles([]);
+
+                // Clear all file inputs and reset "X dosya seçildi" texts
+                fileInputs.forEach(input => {
+                    input.value = '';
+                });
+
+                const fileCountSpans = document.querySelectorAll('span[id^="file-count-"]');
+                fileCountSpans.forEach(span => {
+                    span.textContent = 'Dosya seçilmedi';
+                });
+
                 // Eğer History sekmesi açıksa listeyi güncelle (veya arka planda)
+                fetchBackups();
+            } else {
+                setMessage('Hata: ' + result.message);
+            }
+        } catch (error) {
+            console.error(error);
+            setMessage('Hata: Sunucu ile iletişim kurulamadı.');
+        }
+        setLoading(false);
+    };
+
+    const handleSingleUpdate = async (section, index) => {
+        setLoading(true);
+        setMessage('');
+
+        // Prepare the specific array item
+        const updatedArray = [...content[section]];
+        const currentItem = updatedArray[index];
+
+        const tempContent = { ...content };
+        tempContent[section] = updatedArray;
+
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(tempContent));
+
+        // Find file inputs ONLY for this specific item
+        const fileInputName = section === 'events' ? `event_images_${index}[]` : `announcement_images_${index}[]`;
+        const fileInput = document.querySelector(`input[name="${fileInputName}"]`);
+
+        if (fileInput && fileInput.files.length > 0) {
+            for (let i = 0; i < fileInput.files.length; i++) {
+                formData.append(fileInput.name, fileInput.files[i]);
+            }
+        }
+
+        try {
+            const response = await fetch('/api.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                setMessage(`${section === 'events' ? 'Etkinlik' : 'Duyuru'} başarıyla kaydedildi!`);
+                setContent(result.data);
+
+                // Clear the specific file input and reset text
+                if (fileInput) fileInput.value = '';
+                const spanId = section === 'events' ? `file-count-event-${index}` : `file-count-ann-${index}`;
+                const span = document.getElementById(spanId);
+                if (span) span.textContent = 'Dosya seçilmedi';
+
                 fetchBackups();
             } else {
                 setMessage('Hata: ' + result.message);
@@ -232,6 +297,20 @@ const AdminPanel = (props) => {
             ...prev,
             [section]: newArray
         }));
+    };
+
+    const handleSwapImage = (section, itemIndex, imgIndex, direction) => {
+        const item = content[section][itemIndex];
+        if (!item || !item.images || item.images.length < 2) return;
+
+        const newImages = [...item.images];
+        if (direction === 'left' && imgIndex > 0) {
+            [newImages[imgIndex - 1], newImages[imgIndex]] = [newImages[imgIndex], newImages[imgIndex - 1]];
+        } else if (direction === 'right' && imgIndex < newImages.length - 1) {
+            [newImages[imgIndex + 1], newImages[imgIndex]] = [newImages[imgIndex], newImages[imgIndex + 1]];
+        }
+
+        handleArrayChange(section, itemIndex, 'images', newImages);
     };
 
     const formatDate = (dateString) => {
@@ -406,6 +485,76 @@ const AdminPanel = (props) => {
                                                 )}
                                             </div>
                                         )}
+                                    </div>
+
+                                    {/* Logos / Partners Section */}
+                                    <div className="mt-8 pt-6 border-t">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h4 className="text-md font-bold text-gray-700">Partner / Sponsor Logoları</h4>
+                                        </div>
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <label className="cursor-pointer bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded-full hover:bg-blue-100 transition-colors text-sm">
+                                                Logo Seç
+                                                <input
+                                                    type="file"
+                                                    multiple
+                                                    name="logo_images[]"
+                                                    onChange={(e) => {
+                                                        const count = e.target.files.length;
+                                                        const span = document.getElementById('file-count-logos');
+                                                        if (span) span.textContent = count > 0 ? `${count} logo seçildi` : 'Dosya seçilmedi';
+                                                    }}
+                                                    className="hidden"
+                                                />
+                                            </label>
+                                            <span id="file-count-logos" className="text-sm text-gray-500">Dosya seçilmedi</span>
+                                        </div>
+                                        <div className="flex gap-4 mt-4 overflow-x-auto pb-4">
+                                            {content.logos && content.logos.map((logoUrl, i) => (
+                                                <div key={i} className="relative flex-shrink-0 w-24 h-24 group bg-gray-50 border rounded-lg p-2">
+                                                    <img src={logoUrl} alt={`Logo ${i}`} className="w-full h-full object-contain drop-shadow-sm" />
+
+                                                    {deleteConfirm && deleteConfirm.section === 'logos' && deleteConfirm.imgIndex === i ? (
+                                                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center rounded-lg animate-fade-in text-white p-1">
+                                                            <span className="text-[10px] font-semibold mb-1">Sil?</span>
+                                                            <div className="flex gap-1">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const newLogos = [...content.logos];
+                                                                        newLogos.splice(i, 1);
+                                                                        setContent(prev => ({ ...prev, logos: newLogos }));
+                                                                        setDeleteConfirm(null);
+                                                                    }}
+                                                                    className="bg-red-500 hover:bg-red-600 p-1 rounded-full text-white transition-colors"
+                                                                    title="Evet"
+                                                                >
+                                                                    <Check size={12} />
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setDeleteConfirm(null)}
+                                                                    className="bg-gray-500 hover:bg-gray-600 p-1 rounded-full text-white transition-colors"
+                                                                    title="Hayır"
+                                                                >
+                                                                    <X size={12} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setDeleteConfirm({ section: 'logos', imgIndex: i })}
+                                                            className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-all opacity-0 group-hover:opacity-100"
+                                                            title="Logoyu Sil"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-1">Yeni dosya seçerseniz mevcut logoların üzerine eklenir. Beyaz veya transparan arkaplanlı logolar tavsiye edilir.</p>
                                     </div>
                                 </div>
                             )}
@@ -610,10 +759,42 @@ const AdminPanel = (props) => {
                                                                     <Trash2 size={14} />
                                                                 </button>
                                                             )}
+
+                                                            {/* Swap Buttons */}
+                                                            {event.images.length > 1 && (
+                                                                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleSwapImage('events', index, i, 'left')}
+                                                                        disabled={i === 0}
+                                                                        className={`p-1 bg-black/60 text-white rounded-full pointer-events-auto ${i === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/80'}`}
+                                                                    >
+                                                                        <span className="text-xs leading-none">←</span>
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleSwapImage('events', index, i, 'right')}
+                                                                        disabled={i === event.images.length - 1}
+                                                                        className={`p-1 bg-black/60 text-white rounded-full pointer-events-auto ${i === event.images.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/80'}`}
+                                                                    >
+                                                                        <span className="text-xs leading-none">→</span>
+                                                                    </button>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     ))}
                                                 </div>
                                                 <p className="text-xs text-gray-400 mt-1">Yeni dosya seçerseniz mevcutların üzerine eklenir.</p>
+                                            </div>
+
+                                            <div className="pt-3 border-t mt-4 flex justify-end">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSingleUpdate('events', index)}
+                                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-semibold transition shadow-sm"
+                                                >
+                                                    Bu Etkinliği Kaydet
+                                                </button>
                                             </div>
                                         </div>
                                     ))}
@@ -720,10 +901,42 @@ const AdminPanel = (props) => {
                                                                     <Trash2 size={14} />
                                                                 </button>
                                                             )}
+
+                                                            {/* Swap Buttons */}
+                                                            {ann.images.length > 1 && (
+                                                                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleSwapImage('announcements', index, i, 'left')}
+                                                                        disabled={i === 0}
+                                                                        className={`p-1 bg-black/60 text-white rounded-full pointer-events-auto ${i === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/80'}`}
+                                                                    >
+                                                                        <span className="text-xs leading-none">←</span>
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleSwapImage('announcements', index, i, 'right')}
+                                                                        disabled={i === ann.images.length - 1}
+                                                                        className={`p-1 bg-black/60 text-white rounded-full pointer-events-auto ${i === ann.images.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/80'}`}
+                                                                    >
+                                                                        <span className="text-xs leading-none">→</span>
+                                                                    </button>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     ))}
                                                 </div>
                                                 <p className="text-xs text-gray-400 mt-1">Yeni dosya seçerseniz mevcutların üzerine eklenir.</p>
+                                            </div>
+
+                                            <div className="pt-3 border-t mt-4 flex justify-end">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSingleUpdate('announcements', index)}
+                                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-semibold transition shadow-sm"
+                                                >
+                                                    Bu Duyuruyu Kaydet
+                                                </button>
                                             </div>
                                         </div>
                                     ))}
@@ -762,6 +975,40 @@ const AdminPanel = (props) => {
                                             value={content.footer.copyright}
                                             onChange={(e) => handleInputChange('footer', 'copyright', e.target.value)}
                                         />
+                                    </div>
+
+                                    <div className="pt-6 mt-6 border-t">
+                                        <h4 className="text-md font-bold text-gray-700 mb-4">Sosyal Medya Linkleri</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 mb-1">Instagram URL</label>
+                                                <input type="text" placeholder="https://instagram.com/..." className="w-full border rounded p-2"
+                                                    value={content.footer.instagram || ''}
+                                                    onChange={(e) => handleInputChange('footer', 'instagram', e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 mb-1">Twitter (X) URL</label>
+                                                <input type="text" placeholder="https://twitter.com/..." className="w-full border rounded p-2"
+                                                    value={content.footer.twitter || ''}
+                                                    onChange={(e) => handleInputChange('footer', 'twitter', e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 mb-1">LinkedIn URL</label>
+                                                <input type="text" placeholder="https://linkedin.com/in/..." className="w-full border rounded p-2"
+                                                    value={content.footer.linkedin || ''}
+                                                    onChange={(e) => handleInputChange('footer', 'linkedin', e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 mb-1">Facebook URL</label>
+                                                <input type="text" placeholder="https://facebook.com/..." className="w-full border rounded p-2"
+                                                    value={content.footer.facebook || ''}
+                                                    onChange={(e) => handleInputChange('footer', 'facebook', e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             )}
