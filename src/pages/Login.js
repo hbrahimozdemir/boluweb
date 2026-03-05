@@ -10,11 +10,11 @@ const Login = ({ onLogin }) => {
     const handleLogin = (e) => {
         e.preventDefault();
         try {
-            if (password.trim() === 'admin123') {
+            if (password.trim() === '0nyr4008') {
                 if (onLogin) onLogin(); // Call parent handler
                 navigate('/admin');
             } else {
-                setError('Hatali sifre! (Ipucu: admin123)');
+                setError('Hatali sifre!');
             }
         } catch (err) {
             console.error(err);
