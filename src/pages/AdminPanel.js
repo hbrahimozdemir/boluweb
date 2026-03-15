@@ -35,7 +35,7 @@ const AdminPanel = (props) => {
     }, []);
 
     const fetchContent = () => {
-        fetch('/content.json')
+        fetch('/content.json?t=' + Date.now())
             .then(res => res.json())
             .then(data => {
                 setContent(data);
