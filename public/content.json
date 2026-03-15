@@ -249,5 +249,17 @@
             "icon": "Heart",
             "color": "pink"
         }
+    ],
+    "shopLinks": [
+        {
+            "id": 1,
+            "title": "Shopier Mağazamız",
+            "url": "https://www.shopier.com/baibukampuskoop"
+        }
+    ],
+    "logos": [
+        "/tubitak.png",
+        "/logo.png",
+        "/baibu-logo.png"
     ]
 }

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Calendar, Clock, MapPin, ChevronLeft, ChevronRight,
     Megaphone, Mail, Phone, Map, Instagram, Twitter, Linkedin, Facebook,
-    ArrowRight, X, Menu, Target, Users, Lightbulb, Heart, Star, Shield, Leaf
+    ArrowRight, X, Menu, Target, Users, Lightbulb, Heart, Star, Shield, Leaf, ShoppingBag
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -134,32 +134,39 @@ const Home = () => {
             </header>
 
             {/* Hero Section */}
-            <div className="relative pt-32 pb-32 flex content-center items-center justify-center min-h-[75vh] bg-[#fdfbf7]">
+            <div className="relative pt-32 pb-32 flex content-center items-center justify-center min-h-[85vh] overflow-hidden">
+                {/* Background Image/Color */}
+                {hero.imageUrl ? (
+                    <>
+                        <div 
+                            className="absolute inset-0 bg-cover bg-center bg-no-state-transition" 
+                            style={{ backgroundImage: `url(${hero.imageUrl})` }}
+                        />
+                        <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px]" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-white/60" />
+                    </>
+                ) : (
+                    <div className="absolute inset-0 bg-[#fdfbf7]" />
+                )}
+
                 <div className="container relative mx-auto px-4 z-10">
                     <div className="items-center flex flex-wrap">
-                        <div className="w-full lg:w-8/12 px-4 ml-auto mr-auto text-center">
+                        <div className="w-full lg:w-9/12 px-4 ml-auto mr-auto text-center">
                             {/* Logos Row - Main logo centered with partner logos on sides */}
                             <div className="flex items-center justify-center gap-4 md:gap-8 mb-8 flex-wrap">
-                                {content.logos && content.logos.length > 0 ? (
-                                    content.logos.map((logo, index) => (
-                                        <div key={index} className={`flex items-center justify-center bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100 ${index === 1 ? 'w-32 h-32 md:w-40 md:h-40 z-10 shadow-xl hover:scale-110' : 'w-24 h-24 md:w-32 md:h-32'}`}>
-                                            <img src={logo} alt={`Partner ${index}`} className="max-w-full max-h-full object-contain" />
+                                {content.logos && content.logos.map((logo, index) => {
+                                    // Ortadaki logoyu daha büyük yap (3 logo varsa 2. öğe)
+                                    const isCenter = content.logos.length === 3 ? index === 1 : false;
+                                    return (
+                                        <div 
+                                            key={index} 
+                                            className={`flex items-center justify-center bg-white rounded-full p-2 shadow-xl transform hover:scale-105 transition-all duration-500 border border-yellow-100/50 
+                                                ${isCenter ? 'w-32 h-32 md:w-44 md:h-44 z-10 scale-110 shadow-2xl' : 'w-24 h-24 md:w-32 md:h-32 opacity-90'}`}
+                                        >
+                                            <img src={logo} alt={`Partner ${index}`} className="max-w-[80%] max-h-[80%] object-contain" loading="lazy" />
                                         </div>
-                                    ))
-                                ) : (
-                                    // Fallback to static logos if no dynamic logos are set
-                                    <>
-                                        <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
-                                            <img src="/tubitak.png" alt="TÜBİTAK Logo" className="max-w-full max-h-full object-contain" />
-                                        </div>
-                                        <div className="flex items-center justify-center w-32 h-32 md:w-40 md:h-40 bg-white rounded-full p-2 shadow-xl z-10 transform hover:scale-110 transition-transform duration-300 border border-gray-100">
-                                            <img src="/logo.png" alt="BAİBÜ Kampüs Kooperatifi" className="max-w-full max-h-full object-contain" />
-                                        </div>
-                                        <div className="flex items-center justify-center w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-2 shadow-lg transform hover:scale-105 transition-transform duration-300 border border-gray-100">
-                                            <img src="/baibu-logo.png" alt="BAİBÜ Logo" className="max-w-full max-h-full object-contain" />
-                                        </div>
-                                    </>
-                                )}
+                                    );
+                                })}
                             </div>
                             <h1 className="text-yellow-700 font-bold text-5xl mb-6 drop-shadow-sm">
                                 {hero.title && hero.title.split('Hakkında')[0]} <span className="text-emerald-600">Hakkında</span>
@@ -226,7 +233,7 @@ const Home = () => {
                             </p>
                         </div>
                         <div className="rounded-xl overflow-hidden shadow-lg">
-                            <img src={about.imageUrl || "/leather.jpg"} alt="About" className="w-full h-80 object-cover" />
+                            <img src={about.imageUrl || "/leather.jpg"} alt="About" className="w-full h-80 object-cover" loading="lazy" />
                         </div>
                     </div>
                 </div>
@@ -386,13 +393,46 @@ const Home = () => {
                 </div>
             </section>
 
+            {/* Shop Section */}
+            <section id="shop" className="py-16 bg-white border-t border-gray-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl md:text-4xl font-bold text-yellow-700 mb-4">Mağazalarımız</h2>
+                        <p className="text-gray-700 max-w-2xl mx-auto">
+                            Ürünlerimize aşağıdaki e-ticaret platformları üzerinden ulaşabilir ve kooperatifimize destek olabilirsiniz.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-6">
+                        {content.shopLinks && content.shopLinks.map(shop => (
+                            <a 
+                                key={shop.id} 
+                                href={getAbsoluteUrl(shop.url)} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-4 bg-gray-50 border border-yellow-100 p-6 rounded-2xl hover:bg-yellow-50 hover:border-yellow-300 transition-all duration-300 group shadow-sm hover:shadow-md min-w-[280px]"
+                            >
+                                <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center text-yellow-600 group-hover:scale-110 transition-transform">
+                                    <ShoppingBag size={28} />
+                                </div>
+                                <div className="text-left">
+                                    <h3 className="font-bold text-gray-800 text-lg">{shop.title}</h3>
+                                    <span className="text-yellow-700 text-sm font-medium flex items-center gap-1">
+                                        Mağazaya Git <ArrowRight size={14} />
+                                    </span>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* Footer */}
             <footer id="footer" className="bg-gray-900 text-white py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                         <div>
                             <div className="flex items-center space-x-3 mb-4">
-                                <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain bg-white rounded-full" />
+                                            <img src={(content.logos && content.logos.length > 1) ? content.logos[1] : (content.logos && content.logos.length > 0 ? content.logos[0] : "/logo.png")} alt="Logo" className="w-12 h-12 object-contain bg-white rounded-full" loading="lazy" />
                                 <span className="text-xl font-bold">BAİBÜ Kampüs Kooperatifi</span>
                             </div>
                             <p className="text-gray-400 text-sm mb-4">

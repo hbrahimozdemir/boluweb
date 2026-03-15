@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trash2, X, Check } from 'lucide-react';
+import { Trash2, X, Check, ShoppingBag } from 'lucide-react';
 
 const AdminPanel = (props) => {
     // Tüm içerik verisi
@@ -21,6 +21,7 @@ const AdminPanel = (props) => {
     const [logoFiles, setLogoFiles] = useState([]);
 
     const [deleteConfirm, setDeleteConfirm] = useState(null); // { section, itemIndex, imgIndex }
+    const [restoreConfirm, setRestoreConfirm] = useState(null); // filename to restore
 
     // Auto-scroll refs
     const eventsEndRef = useRef(null);
@@ -210,8 +211,6 @@ const AdminPanel = (props) => {
     };
 
     const handleRestore = async (version) => {
-        if (!window.confirm('Bu versiyona geri dönmek istediğinize emin misiniz? Mevcut değişiklikler kaybolabilir (ama yedeği alınır).')) return;
-
         try {
             const encodedVersion = encodeURIComponent(version);
             const response = await fetch(`/api.php?action=restore&version=${encodedVersion}`);
@@ -279,7 +278,9 @@ const AdminPanel = (props) => {
             ? { id: Date.now(), title: '', date: '', time: '', location: '', description: '', status: 'upcoming', registerLink: '' }
             : section === 'infoCards'
                 ? { id: Date.now(), title: '', description: '', icon: 'Lightbulb', color: 'gray' }
-                : { id: Date.now(), title: '', date: '', description: '', registerLink: '', color: 'yellow' };
+                : section === 'shopLinks'
+                    ? { id: Date.now(), title: '', url: '' }
+                    : { id: Date.now(), title: '', date: '', description: '', registerLink: '', color: 'yellow' };
 
         setContent(prev => ({
             ...prev,
@@ -394,7 +395,7 @@ const AdminPanel = (props) => {
 
                 {/* Tabs */}
                 <div className="flex border-b overflow-x-auto">
-                    {['hero', 'infoCards', 'about', 'events', 'announcements', 'footer', 'history'].map(tab => (
+                    {['hero', 'infoCards', 'about', 'events', 'announcements', 'footer', 'shopLinks', 'history'].map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -405,7 +406,8 @@ const AdminPanel = (props) => {
                                     tab === 'about' ? 'Hakkımızda' :
                                         tab === 'events' ? 'Etkinlikler' :
                                             tab === 'announcements' ? 'Duyurular' :
-                                                tab === 'footer' ? 'Alt Bilgi' : 'Geçmiş/Geri Al'}
+                                                tab === 'footer' ? 'Alt Bilgi' :
+                                                    tab === 'shopLinks' ? 'Mağazalarımız' : 'Geçmiş/Geri Al'}
                         </button>
                     ))}
                 </div>
@@ -432,9 +434,32 @@ const AdminPanel = (props) => {
                                                 {backup.file}
                                             </span>
                                         </div>
-                                        <div className="flex gap-2">
+                                        <div className="flex gap-2 relative">
+                                            {restoreConfirm === backup.file ? (
+                                                <div className="absolute right-0 bottom-full mb-2 min-w-max bg-white border shadow-lg rounded p-3 z-50 animate-fade-in">
+                                                    <p className="text-sm font-bold mb-2">Emin misiniz?</p>
+                                                    <p className="text-xs text-gray-500 mb-3">Mevcut veriler silinip bu yedeğe dönülecek.</p>
+                                                    <div className="flex gap-2 justify-end">
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => { e.stopPropagation(); handleRestore(backup.file); setRestoreConfirm(null); }}
+                                                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs"
+                                                        >
+                                                            Evet, Yükle
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => { e.stopPropagation(); setRestoreConfirm(null); }}
+                                                            className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded text-xs"
+                                                        >
+                                                            İptal
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : null}
                                             <button
-                                                onClick={() => handleRestore(backup.file)}
+                                                type="button"
+                                                onClick={(e) => { e.preventDefault(); setRestoreConfirm(backup.file); }}
                                                 className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
                                             >
                                                 Geri Yükle
@@ -597,7 +622,7 @@ const AdminPanel = (props) => {
                                                 </div>
                                             ))}
                                         </div>
-                                        <p className="text-xs text-gray-400 mt-1">Yeni dosya seçerseniz mevcut logoların üzerine eklenir. Beyaz veya transparan arkaplanlı logolar tavsiye edilir.</p>
+                                        <p className="text-xs text-gray-400 mt-1">Sitedeki logoları buradan silebilir veya yenilerini ekleyerek değiştirebilirsiniz. Beyaz veya transparan arkaplanlı logolar tavsiye edilir.</p>
                                     </div>
                                 </div>
                             )}
@@ -1100,6 +1125,53 @@ const AdminPanel = (props) => {
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            )}
+
+                            {/* SHOP LINKS TAB */}
+                            {activeTab === 'shopLinks' && (
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center border-b pb-2 mb-4">
+                                        <h3 className="text-lg font-bold text-gray-700">E-Ticaret Mağazalarımızı Düzenle</h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAddItem('shopLinks')}
+                                            className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition"
+                                        >
+                                            + Yeni Mağaza Ekle
+                                        </button>
+                                    </div>
+                                    <p className="text-sm text-gray-500 -mt-2 mb-4">Ürünlerin satıldığı shopier, trendyol vb. mağaza linklerini buradan yönetebilirsiniz.</p>
+
+                                    {content.shopLinks && content.shopLinks.map((shop, index) => (
+                                        <div key={index} className="border p-4 rounded bg-gray-50 space-y-3 relative">
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex items-center gap-2">
+                                                    <ShoppingBag size={16} className="text-yellow-600" />
+                                                    <h4 className="font-bold text-sm text-gray-600">Mağaza #{index + 1}</h4>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveItem('shopLinks', index)}
+                                                    className="text-red-500 hover:text-red-700 text-sm font-medium"
+                                                >
+                                                    Sil
+                                                </button>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="text-sm font-medium text-gray-600 block mb-1">Mağaza Adı</label>
+                                                    <input type="text" className="border rounded p-2 w-full" placeholder="Örn: Shopier Mağazamız"
+                                                        value={shop.title} onChange={(e) => handleArrayChange('shopLinks', index, 'title', e.target.value)} />
+                                                </div>
+                                                <div>
+                                                    <label className="text-sm font-medium text-gray-600 block mb-1">Mağaza Linki (URL)</label>
+                                                    <input type="text" className="border rounded p-2 w-full" placeholder="https://www.shopier.com/..."
+                                                        value={shop.url} onChange={(e) => handleArrayChange('shopLinks', index, 'url', e.target.value)} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
 
